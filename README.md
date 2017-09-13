@@ -9,8 +9,8 @@ Our method is based on collecting discordant, concordant and split-reads from al
 # Third-party tools 
 There is a list of required third-party tools that have to be installed before running the system. The paths to the executable files to each third-party tool have to be provided as input as described further. 
 
-1. SAMtools is essential for processing .bam files and collecting reads. To download and install the tool, follow the link: https://github.com/samtools/ samtools. 
-2. CD-HIT is used to remove redundant reads before the assembly by running the CD-HIT-EST program. Follow the link to download the tool: https:// github.com/weizhongli/cdhit. 
+1. SAMtools is essential for processing .bam files and collecting reads. To download and install the tool, follow the link: https://github.com/samtools/samtools. 
+2. CD-HIT is used to remove redundant reads before the assembly by running the CD-HIT-EST program. Follow the link to download the tool: https://github.com/weizhongli/cdhit. 
 3. CAP3 tool is used to assemble the reads into contigs. The link to download: http://seq.cs.iastate.edu/cap3.html. 
 4. BLAST program blastn is integrated to perform the alignment of the contigs to the consensus database. To download and install the tool, follow the link: https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download and https://www.ncbi.nlm.nih.gov/books/NBK279671/. 
 5. bl2seq program does the all-against-all pairwise alignment of contigs which is necessary for the "bridge" assembly of the insertion sequence. The program is distributed with the blastall program by the NCBI. The link to download is: https://blast.ncbi.nlm.nih.gov/Blast.cgi. 
@@ -22,7 +22,7 @@ The command to execute the program is:
 java -Xmx5g -d64 -jar MEBuilder.jar 
 
 Where -Xmx5g is a parameter for memory allocation, and MEBuilder.jar is the executable file. 
-For more information about Java command line execution, please refer to http: //docs.oracle.com/javase/7/docs/technotes/tools/windows/java.html 
+For more information about Java command line execution, please refer to http://docs.oracle.com/javase/7/docs/technotes/tools/windows/java.html 
 
 # Input 
 The list of the required and optional input parameters is: 
@@ -49,14 +49,14 @@ The list of the required and optional input parameters is:
 The system creates intermediate output that is used by later steps. For that reason, a minimum of 2 GB extra space has to be provided. 
 The intermediate output contains such directories: 
 
-1. disc reads/ folder that contains qualified reads in a FASTA format and the BAM folder with raw data of qualified reads in .txt format for studying purposes. To speed up the process when running the tool a second time do not delete this folder.  
-2. intermediate output/cap3 assembly folder contains the output from running CAP3 tool.  
-3. intermediate output/contigs for merging folder contains valid contigs parsed into separate files.  
-4. intermediate output/bl2seq output folder stores pairwise alignments data for all contigs pairs for each location.  
-5. intermediate output/bl2seq output flanking folder contains the alignment data of contigs to the reference genome (specifically to the region of interest - 600 bp before and after the event point).  
-6. intermediate output/merged contigs folder stores the intermediate merged sequences of contigs and flanking regions.  
-7. intermediate output/ref flanking directory stores the reference genome sequence of the region of interest (600 bp before and after the insertion point).  
-8. intermediate output/tsd alignment folder contains the alignment data for TSD calculation.  
+1. disc_reads/ folder that contains qualified reads in a FASTA format and the BAM folder with raw data of qualified reads in .txt format for studying purposes. To speed up the process when running the tool a second time do not delete this folder.  
+2. intermediate_output/cap3_assembly folder contains the output from running CAP3 tool.  
+3. intermediate_output/contigs_for_merging folder contains valid contigs parsed into separate files.  
+4. intermediate_output/bl2seq_output folder stores pairwise alignments data for all contigs pairs for each location.  
+5. intermediate_output/bl2seq_output flanking folder contains the alignment data of contigs to the reference genome (specifically to the region of interest - 600 bp before and after the event point).  
+6. intermediate_output/merged_contigs folder stores the intermediate merged sequences of contigs and flanking regions.  
+7. intermediate_output/ref_flanking directory stores the reference genome sequence of the region of interest (600 bp before and after the insertion point).  
+8. intermediate_output/tsd_alignment folder contains the alignment data for TSD calculation.  
 9. log/ where all logs are saved.  
 10. results/ where all results are stored based on type, location and status: characterized, partially characterized (has a gap in the middle which is represented by Ns), and failed. It is best to remove or clean this folder before running the tool again.  
 Inside each of the described folders, except for disc reads, each type has its own directory and each location has its own folder as well. 
@@ -65,6 +65,6 @@ Inside each of the described folders, except for disc reads, each type has its o
 In the additional package, some input data is included such as: 
 
 1. The consensus database for covered types - /com/yg/input/consensus.
-2. The .bed files with locations for each type - /com/yg/input/data1KP/ and //com/yg/input/non_reference. 
+2. The .bed files with locations for each type - /com/yg/input/data1KP/ and /com/yg/input/non_reference. 
 3. The collected discordant and split-reads for input locations - /disc_reads. 
 4. The version of the reference genome that was used - /com/yg//input/ref/hg19. 
