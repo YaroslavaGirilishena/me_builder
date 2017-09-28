@@ -922,8 +922,8 @@ public class InputDataHandler {
 	            sra2FA.put(data.get(0), values);
             } // end of a single BAM file
 
-            if (IOParameters.FILTERS_APPLY && leftNumOfSplitReads >= IOParameters.SPLIT_READS_CUTOFF && rightNumOfSplitReads >= IOParameters.SPLIT_READS_CUTOFF) {
-            	//continue;
+            if (IOParameters.FILTERS_APPLY && (leftNumOfSplitReads + rightNumOfSplitReads + numOfDiscReads)/3 >= IOParameters.SPLIT_READS_CUTOFF.get(IOParameters.ME_TYPE)) {
+            	continue;
             }
 
 		} // end of bam file loop

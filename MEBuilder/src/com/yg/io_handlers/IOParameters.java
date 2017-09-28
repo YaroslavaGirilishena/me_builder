@@ -121,7 +121,12 @@ public class IOParameters {
 	public static boolean EXCLUDE_RANDOM = false; // option for whether or not to exclude non-standard chromosomes in samtools
 	public static int QR = 2; // default minimal number of reads
 	public static int TE = 1; // default is to filter out those with anchoring reads mapping to the same TE/gene regions
-	public static int SPLIT_READS_CUTOFF = 90; // minimal number of split-reads to be collected before aborting reading from .bam files 
+	public static final Map<String, Integer> SPLIT_READS_CUTOFF = new HashMap<String, Integer>(); // average number of split-reads to be collected before aborting reading from .bam files 
+	static {
+		SPLIT_READS_CUTOFF.put("Alu", 94);
+		SPLIT_READS_CUTOFF.put("SVA", 363);
+		SPLIT_READS_CUTOFF.put("L1", 355);
+	}	
 	public static int DISCORDANT_READS_CUTOFF = 120; // minimal number of discordant reads to be collected before aborting reading from .bam files 
 	public static boolean FILTERS_APPLY = true;
 

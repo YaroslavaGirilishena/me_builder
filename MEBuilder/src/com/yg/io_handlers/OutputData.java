@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.yg.assembler.Bl2seqAlignment;
 import com.yg.exceptions.InputParametersException;
@@ -318,19 +320,34 @@ public class OutputData {
 			rightFlankAlignment = alignments.get(0);
 		}
 
-		String flankSeq = "";
+		String flankSeq = "", tr = "";
+		Matcher matcherA, matcherT;
+		
 		// left flanking
 		if (//Integer.parseInt(leftFlankAlignment.get(7)) - 1 > IOParameters.FLANKING_REGION &&
 				Integer.parseInt(leftFlankAlignment.get(7)) - 1 < me.getFlankingL().length()) { // if there is an extra sequence
 			
 			flankSeq = me.getFlankingL();
+			tr = flankSeq.substring(Integer.parseInt(leftFlankAlignment.get(7)));
 			
+			// poly T/A
+        	matcherA = Pattern.compile("\\A[a]+\\z").matcher(tr);
+        	matcherT = Pattern.compile("\\A[t]+\\z").matcher(tr);
+    
 			me.setFlankingL(flankSeq.substring(0, Integer.parseInt(leftFlankAlignment.get(7))));
 			if (me.getStrand() == '+') {
-				me.setTransduction5(flankSeq.substring(Integer.parseInt(leftFlankAlignment.get(7))));
+				if (!matcherT.find()) {
+					me.setTransduction5(tr);
+				}
+				me.setSequence(tr + me.getSequence());
+				
 				LOGGER.info("5' TR: " + me.getTransduction5() + " " + me.getTransduction5().length() + " bases");
 			} else {
-				me.setTransduction3(flankSeq.substring(Integer.parseInt(leftFlankAlignment.get(7))));
+				if (!matcherA.find()) {
+					me.setTransduction3(tr);
+				}
+				me.setSequence(me.getSequence() + tr);
+				
 				LOGGER.info("3' TR: " + me.getTransduction3() + " " + me.getTransduction3().length() + " bases");
 			}
 		}
@@ -341,14 +358,31 @@ public class OutputData {
 				me.getFlankingR().length() > lengthOfRefAlignment) { // if there is an extra sequence
 			
 			flankSeq = me.getFlankingR();
+			tr = flankSeq.substring(0, flankSeq.length() - lengthOfRefAlignment);
 			
+			// poly T/A
+			matcherA = Pattern.compile("\\A[a]+\\z").matcher(tr);
+        	matcherT = Pattern.compile("\\A[t]+\\z").matcher(tr);
+        	
+        	if (matcherA.find() || matcherT.find()) {
+				return;
+			}
+        	
 			if (flankSeq.length() > IOParameters.FLANKING_REGION) {
 				me.setFlankingR(flankSeq.substring(flankSeq.length() - lengthOfRefAlignment));
 				if (me.getStrand() == '-') {
-					me.setTransduction5(flankSeq.substring(0, flankSeq.length() - lengthOfRefAlignment));
+					if (!matcherT.find()) {
+						me.setTransduction5(tr);
+					}
+					me.setSequence(tr + me.getSequence());
+
 					LOGGER.info("5' TR: " + me.getTransduction5() + " " + me.getTransduction5().length() + " bases");
 				} else {
-					me.setTransduction3(flankSeq.substring(0, flankSeq.length() - lengthOfRefAlignment));
+					if (!matcherA.find()) {
+						me.setTransduction3(tr);
+					}
+					me.setSequence(me.getSequence() + tr);
+
 					LOGGER.info("3' TR: " + me.getTransduction3() + " " + me.getTransduction3().length() + " bases");
 				}
 			}
