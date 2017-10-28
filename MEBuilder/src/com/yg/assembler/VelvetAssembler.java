@@ -15,26 +15,40 @@ import com.yg.utilities.ProcessStream;
 
 /**
  * This class performs assembly using velvet tool
- * And extracts assembled contigs
  * 
  * @author Yaroslava Girilishena
  *
  */
 public class VelvetAssembler {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 	
 	public String fileWithReads;
 	public String outputDirectory;
 	
+	/**
+	 * Constructor
+	 * @param reads
+	 * @param out
+	 */
 	public VelvetAssembler(String reads, String out){
 		this.fileWithReads = reads;
 		this.outputDirectory = out;
 	}
 	
-	public static String doLocalAssembly(String varType, String chromosome, long position, Integer estimatedCoverage) throws IOException, InterruptedException, InputParametersException {
-		String fileWithReads = System.getProperty("user.dir") + "/disc_reads/" + varType + "/" + varType + "." + chromosome + "_" + position + IOParameters.OUTPUT_FORMAT;
+	/**
+	 * Perform local assembly using Velvet tool
+	 * @param chromosome
+	 * @param position
+	 * @param estimatedCoverage
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws InputParametersException
+	 */
+	public static String doLocalAssembly(String chromosome, long position, Integer estimatedCoverage) throws IOException, InterruptedException, InputParametersException {
+		String fileWithReads = System.getProperty("user.dir") + "/disc_reads/" + IOParameters.ME_TYPE + "/" + IOParameters.ME_TYPE + "." + chromosome + "_" + position + IOParameters.OUTPUT_FORMAT;
 
-		String outputDirectory = System.getProperty("user.dir") + "/intermediate_output/velvet_assembly/" + varType + "/" + varType + "." + chromosome + "_" + position;
+		String outputDirectory = System.getProperty("user.dir") + "/intermediate_output/velvet_assembly/" + IOParameters.ME_TYPE + "/" + IOParameters.ME_TYPE + "." + chromosome + "_" + position;
 		
 		// Check if input file exist
 		File input = new File(fileWithReads);
@@ -183,8 +197,8 @@ public class VelvetAssembler {
 		velvethCommands.add("-long");
 		velvethCommands.add(fileWithContigs);
 		
-		// First establishes hash-tables consisting of all possible Kmeric sub-sequences found in the sequencing read dataset
-		// This is were read type and Kmer length(s) are defined.
+		// First establishes hash-tables consisting of all possible k-meric sub-sequences found in the sequencing read dataset
+		// This is were read type and k-mer length(s) are defined.
 	    ProcessBuilder velvetPB = new ProcessBuilder(velvethCommands);
         Process velvetProcess = velvetPB.start();
         

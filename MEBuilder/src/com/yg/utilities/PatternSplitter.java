@@ -9,14 +9,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Ssplitting strings using any pattern
+ * Splitting strings using any pattern
  * 
  * @author Yaroslava Girilishena
  *
  */
 public class PatternSplitter {
 	
-	/** Setup patterns to match (find, filter) the input data
+	/** 
+	 * Setup patterns to match (find, filter) the input data
 	 * A Pattern object is a compiled representation of a regular expression
 	 */
 	public static final Pattern PTRN_TAB_SPLITTER = Pattern.compile("\t");

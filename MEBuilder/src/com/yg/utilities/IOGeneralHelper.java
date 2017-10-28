@@ -27,7 +27,7 @@ import com.yg.models.FASTASeq;
  *
  */
 public class IOGeneralHelper {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 	
     private static FileHandler fh;  
 
@@ -162,7 +162,6 @@ public class IOGeneralHelper {
 	}
 	
 	/**
-	 * 
 	 * Setup file for logging
 	 * @throws SecurityException
 	 * @throws IOException

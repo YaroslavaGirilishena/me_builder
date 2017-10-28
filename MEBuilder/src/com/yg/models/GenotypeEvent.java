@@ -13,6 +13,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
 /**
+ * Data model of event with genotype information
  * 
  * @author Yaroslava Girilishena
  *
@@ -35,6 +36,21 @@ public class GenotypeEvent {
 	public Map<String, String> sampleGenotypeMap = new HashMap<String, String>();
 	public Multimap<String, String> genotypeToSamplesMap = HashMultimap.create();
 	
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param chromosome
+	 * @param position
+	 * @param ids
+	 * @param ref
+	 * @param alt
+	 * @param quality
+	 * @param filters
+	 * @param info
+	 * @param format
+	 * @param sampleGenotypeMap
+	 */
 	public GenotypeEvent(String chromosome, long position, 
 			List<String> ids, String ref, List<String> alt,
 			BigDecimal quality, List<String> filters, 
@@ -50,21 +66,12 @@ public class GenotypeEvent {
 		this.filter = filters;
 		this.info = info;
 		this.format = format;
-		//this.genotypes = genotypes;
-		//this.sampleGenotypeMap = sampleGenotypeMap;
+		this.sampleGenotypeMap = sampleGenotypeMap;
 	
 		// Invert - create values to keys map
 		this.genotypeToSamplesMap = Multimaps.invertFrom(Multimaps.forMap(sampleGenotypeMap), HashMultimap.<String, String> create());
-
-		/*for (Entry<String, Collection<String>> entry : this.genotypeToSamplesMap.asMap().entrySet()) {
-		  System.out.println("Original value: " + entry.getKey() + " was mapped to keys: "
-		      + entry.getValue());
-		}*/
 	}
 	
-	/**
-	 * 
-	 */
 	public String toString() {
 		String toPrint = "";
 		toPrint += "CHROM: " + this.chromosome + '\t' + 

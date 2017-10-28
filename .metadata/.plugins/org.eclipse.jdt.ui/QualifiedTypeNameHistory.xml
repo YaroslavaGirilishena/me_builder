@@ -2,4 +2,7 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.util.regex.Matcher"/>
 <fullyQualifiedTypeName name="java.util.regex.Pattern"/>
+<fullyQualifiedTypeName name="com.yg.graph.Edge"/>
+<fullyQualifiedTypeName name="com.yg.graph.Vertex"/>
+<fullyQualifiedTypeName name="com.yg.utilities.PatternSplitter"/>
 </qualifiedTypeNameHistroy>

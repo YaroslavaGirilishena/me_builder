@@ -11,19 +11,21 @@ import com.yg.utilities.IOGeneralHelper;
 import com.yg.utilities.ProcessStream;
 
 /**
- * This class do pairwise alignment between contigs (or contig and flanking) using bl2seq tool
+ * This class does pairwise alignment between contigs (or contig and flanking) using bl2seq tool
  * 
  * @author Yaroslava Girilishena
  *
  */
 
 public class Bl2seqAlignment {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 	
 	/**
-	 * Compare pairwise two contigs for alignment 
-	 * @param contig1
-	 * @param contig2
+	 *  Compare pairwise two contigs for alignment 
+	 * @param contig1 - path to cintig 1
+	 * @param contig2 - path to contig 2
+	 * @param outDir - output directory
+	 * @return a file with output data
 	 * @throws IOException
 	 * @throws InputParametersException
 	 * @throws InterruptedException
@@ -55,6 +57,7 @@ public class Bl2seqAlignment {
 		blastnCommands.add("-o");
 		blastnCommands.add(bl2seqOutFile);
 
+		// Run the tool
 		ProcessBuilder blastnPB = new ProcessBuilder(blastnCommands);
         Process blastnProcess = blastnPB.start();
         
@@ -74,19 +77,21 @@ public class Bl2seqAlignment {
         outputStream.start();
 
         blastnProcess.waitFor();
-        outputStream.cleanBuffer();
+        outputStream.cleanBuffer(); // clean buffer
 		
-		return bl2seqOutFile;
+		return bl2seqOutFile; // return a file with output data
 	}
 
 	/**
 	 * Run bl2seq to align contig and reference sequence to find TSD/IMD, etc.
 	 * @param contig
 	 * @param ref
-	 * @return
-	 * @throws IOException 
-	 * @throws InputParametersException 
-	 * @throws InterruptedException 
+	 * @param chromosome
+	 * @param position
+	 * @return a file with output data
+	 * @throws IOException
+	 * @throws InputParametersException
+	 * @throws InterruptedException
 	 */
 	public static String runBL2SEQforTSD(String contig, String ref, String chromosome, long position) throws IOException, InputParametersException, InterruptedException {
 		// Create output directory
@@ -116,6 +121,7 @@ public class Bl2seqAlignment {
 		blastnCommands.add("-o");
 		blastnCommands.add(System.getProperty("user.dir") + bl2seqOutFile);
 
+		// Run the tool
 		ProcessBuilder blastnPB = new ProcessBuilder(blastnCommands);
         Process blastnProcess = blastnPB.start();
         
@@ -135,7 +141,7 @@ public class Bl2seqAlignment {
         outputStream.start();
 
         blastnProcess.waitFor();
-        outputStream.cleanBuffer();
+        outputStream.cleanBuffer(); // clean buffer
 		
 		return System.getProperty("user.dir") + bl2seqOutFile;
 	}

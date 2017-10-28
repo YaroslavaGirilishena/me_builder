@@ -9,10 +9,10 @@ package com.yg.models;
 public class ConsensusLocation {
 
 	private String contigId;
-	private String consensus;
-	private long start;
-	private long end;
-	private char strand;
+	private String consensus; // subtype of MEI
+	private long start; // alignment start in consensus
+	private long end; // alignment end in consensus
+	private char strand; // + or - (alignment to consensus)
 	
 	// Constructors
 	

@@ -22,7 +22,7 @@ import com.yg.utilities.PatternSplitter;
  *
  */
 public class BLASTnOutParser {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 
 	private int lineNumber;				// number of current line being read
 	private boolean alreadyFinished;
@@ -43,7 +43,6 @@ public class BLASTnOutParser {
 		this.reader = new BufferedReader(new FileReader(this.filename));
 		boolean hasNext = true;
 		while (hasNext) {
-			//System.out.println("Line #: " + lineNumber + " - has next");
 			hasNext = parseNextLine();
 		}
     	IOUtils.closeQuietly(reader);
@@ -115,7 +114,6 @@ public class BLASTnOutParser {
 			this.blastAlignments.add(alignment);
 						
 		} catch (RuntimeException e) {
-			//System.out.println("Line #: " + lineNumber + " - Exception: " + e);
 			throw new IllegalArgumentException("ERROR - Parsing: BLASTn output line #" + lineNumber + ": " + line, e);
 		}
 		

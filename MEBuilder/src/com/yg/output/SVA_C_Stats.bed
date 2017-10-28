@@ -1,9 +1,0 @@
-#Columns: type, chromosome, start, end, number of left split-reads, number of right split-reads, 
-#number of discordant reads, number of all reads (non-redundant), result of characterization
-SVA	chr13	50173371	50173371	137	405	1404	1938	characterized
-SVA	chr16	75503334	75503334	79	127	969	1170	characterized
-SVA	chr5	180509755	180509755	93	211	405	701	characterized
-SVA	chr5	55448010	55448010	138	170	933	1239	characterized
-SVA	chr5	64388445	64388445	60	78	275	406	characterized
-SVA	chr6	31297398	31297398	313	382	293	952	characterized
-SVA	chr9	107746901	107746901	64	78	279	416	characterized

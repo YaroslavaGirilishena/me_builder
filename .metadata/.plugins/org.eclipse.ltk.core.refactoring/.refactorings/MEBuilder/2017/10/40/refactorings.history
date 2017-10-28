@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename package &apos;com.yg.input.non_reference&apos; to &apos;com.yg.input.dbRIP&apos;&#x0A;- Original project: &apos;MEBuilder&apos;&#x0A;- Original element: &apos;MEBuilder/src/com.yg.input.non_reference&apos;&#x0A;- Renamed element: &apos;MEBuilder/src/com.yg.input.dbRIP&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;com.yg.input.non_reference&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/src&lt;com.yg.input.non_reference" name="com.yg.input.dbRIP" qualified="false" references="true" stamp="1507229371188" textual="false" version="1.0"/>
+</session>

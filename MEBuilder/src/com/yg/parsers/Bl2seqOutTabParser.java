@@ -18,7 +18,7 @@ import com.yg.utilities.PatternSplitter;
  *
  */
 public class Bl2seqOutTabParser {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 
 	private BufferedReader reader;
 	private String filename;
@@ -110,25 +110,5 @@ public class Bl2seqOutTabParser {
 		}
 		
 		return true;
-	}
-	
-	/*
-	 * For testing purposes
-	 */
-	public static void main(String[] arg) {
-		String fileToParse = "/Users/YG/Desktop/left_right_new2.fa";
-		Bl2seqOutTabParser parser = new Bl2seqOutTabParser(fileToParse, false);
-		
-		try {
-			parser.parse();
-			System.out.println("Alignments:");
-			for (Bl2seqOutputData bl2seq : parser.alignmentsList) {
-				System.out.println(bl2seq.toString());
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 	}
 }

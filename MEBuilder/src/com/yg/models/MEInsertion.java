@@ -64,6 +64,9 @@ public class MEInsertion extends MobileElement{
 		initData();
 	}
 	
+	/**
+	 * Reset data
+	 */
 	private void initData() {
 		this.flankingL = "";
 		this.flankingR = "";
@@ -79,7 +82,10 @@ public class MEInsertion extends MobileElement{
 		this.discR = 0;
 	}
 	
-	// Getters and Setters
+	/**
+	 * Getters and Setters
+	 * 
+	 */
 	
 	// Left flanking + transduction check
 	public String getFlankingL() {
@@ -90,18 +96,6 @@ public class MEInsertion extends MobileElement{
 	}
 	
 	public void setFlankingL(String flanking) {
-		// If flanking is longer that expected, there is transduction
-//		if (flanking.length() > IOParameters.FLANKING_REGION) {
-//			this.flankingL = flanking.substring(0, IOParameters.FLANKING_REGION);
-//			if (this.strand == '+') {
-//				this.transduction5 = flanking.substring(IOParameters.FLANKING_REGION);
-//			} else {
-//				this.transduction3 = flanking.substring(IOParameters.FLANKING_REGION);
-//			}
-//		} else {
-//			this.flankingL = flanking;
-//		}
-		
 		this.flankingL = flanking;
 	}
 	
@@ -114,18 +108,6 @@ public class MEInsertion extends MobileElement{
 	}
 	
 	public void setFlankingR(String flanking) {
-		// If flanking is longer that expected, there is transduction
-//		if (flanking.length() > IOParameters.FLANKING_REGION) {
-//			this.flankingR = flanking.substring(flanking.length() - IOParameters.FLANKING_REGION);
-//			if (this.strand == '-') {
-//				this.transduction5 = flanking.substring(0, flanking.length() - IOParameters.FLANKING_REGION);
-//			} else {
-//				this.transduction3 = flanking.substring(0, flanking.length() - IOParameters.FLANKING_REGION);
-//			}
-//		} else {
-//			this.flankingR = flanking;
-//		}
-		
 		this.flankingR = flanking;
 	}
 

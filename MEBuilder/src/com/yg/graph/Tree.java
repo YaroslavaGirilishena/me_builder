@@ -12,7 +12,7 @@ public class Tree<T> {
 	private Node<T> root;
 
     /**
-     * Initialize a tree with the specified root node.
+     * Initialize a tree with the specified root node
      * @param root The root node of the tree
      */
     public Tree(Node<T> root) {
@@ -21,7 +21,7 @@ public class Tree<T> {
 
     /**
      * Checks if the tree is empty (root node is null)
-     * @return true if the tree is empty, false otherwise.
+     * @return true if the tree is empty, false otherwise
      */
     public boolean isEmpty() {
         return root == null;
@@ -29,15 +29,15 @@ public class Tree<T> {
 
     /**
      * Get the root node of the tree
-     * @return the root node.
+     * @return the root node
      */
     public Node<T> getRoot() {
         return root;
     }
 
     /**
-     * Set the root node of the tree. Replaces existing root node.
-     * @param root The root node to replace the existing root node with.
+     * Set the root node of the tree. Replaces existing root node
+     * @param root The root node to replace the existing root node with
      */
     public void setRoot(Node<T> root) {
         this.root = root;
@@ -46,7 +46,7 @@ public class Tree<T> {
     /**
      * Check if given data is present in the tree
      * @param key The data to search for
-     * @return true if the given key was found in the tree, false otherwise.
+     * @return true if the given key was found in the tree, false otherwise
      */
     public boolean exists(T key) {
         return find(root, key);
@@ -103,7 +103,7 @@ public class Tree<T> {
     }
 
     /**
-     * Get the list of nodes arranged by the pre-order traversal of the tree.
+     * Get the list of nodes arranged by the pre-order traversal of the tree
      * @return The list of nodes in the tree, arranged in the pre-order
      */
     public ArrayList<Node<T>> getPreOrderTraversal() {
@@ -113,7 +113,7 @@ public class Tree<T> {
     }
 
     /**
-     * Get the list of nodes arranged by the post-order traversal of the tree.
+     * Get the list of nodes arranged by the post-order traversal of the tree
      * @return The list of nodes in the tree, arranged in the post-order
      */
     public ArrayList<Node<T>> getPostOrderTraversal() {
@@ -138,7 +138,7 @@ public class Tree<T> {
 
     /**
      *
-     * Get the list of nodes in the longest path from root to any leaf in the tree.
+     * Get the list of nodes in the longest path from root to any leaf in the tree
      *
      * For example, for the below tree
      * <pre>
@@ -188,7 +188,7 @@ public class Tree<T> {
     }
 
     /**
-     * Get a list of all the paths (which is again a list of nodes along a path) from the root node to every leaf.
+     * Get a list of all the paths (which is again a list of nodes along a path) from the root node to every leaf
      * @return List of paths.
      */
     public ArrayList<ArrayList<Node<T>>> getPathsFromRootToAnyLeaf() {

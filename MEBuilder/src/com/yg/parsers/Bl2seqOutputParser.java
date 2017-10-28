@@ -59,7 +59,6 @@ public class Bl2seqOutputParser {
 		this.reader = new BufferedReader(new FileReader(this.filename));
 		boolean hasNext = true;
 		while (hasNext) {
-			//System.out.println("Line #: " + lineNumber + " - has next");
 			hasNext = parseNextLine();
 		}
     	IOUtils.closeQuietly(reader);
@@ -69,7 +68,6 @@ public class Bl2seqOutputParser {
 		// Read line with data
 		String line = reader.readLine();
 		if (line == null) {
-			//LOGGER.info("BL2SEQ output Parser - Finished reading");
 			alreadyFinished = true;
 			return false; // No more data to read
 		}
@@ -100,7 +98,6 @@ public class Bl2seqOutputParser {
 				if (this.identities < 90) {
 					this.hitsFound = false;
 					return true;
-					//return false;
 				}
 			}
 			
@@ -118,9 +115,7 @@ public class Bl2seqOutputParser {
 					if (this.queryStart == 0) {
 						this.queryStart = Integer.parseInt(data.get(1));
 					}
-					//if (Integer.parseInt(data.get(data.size() - 1)) > this.queryEnd) {
-						this.queryEnd = Integer.parseInt(data.get(data.size() - 1));
-					//}
+					this.queryEnd = Integer.parseInt(data.get(data.size() - 1));
 					this.hitsFound = true;
 				}
 				
@@ -130,9 +125,7 @@ public class Bl2seqOutputParser {
 					if (this.subjectStart == 0) {
 						this.subjectStart = Integer.parseInt(data.get(1));
 					}
-					//if (Integer.parseInt(data.get(data.size() - 1)) > this.subjectEnd) {
-						this.subjectEnd = Integer.parseInt(data.get(data.size() - 1));
-					//}
+					this.subjectEnd = Integer.parseInt(data.get(data.size() - 1));
 					this.hitsFound = true;
 				}
 			} 

@@ -8,19 +8,19 @@ package com.yg.models;
 public class Bl2seqOutputData {
 	
 	private boolean hitsFound;
-	public double identities;
-	public int alignmentLength;
-	public String queryId;
-	public int queryLength;
-	public char queryStrand;
-	public int queryStart;
-	public int queryEnd;
-	public String subjectId;
-	public int subjectLength;
-	public char subjectStrand;
-	public int subjectStart;
-	public int subjectEnd;
-	public int subjectLeftover;
+	public double identities; // % of identities
+	public int alignmentLength; // alignment length
+	public String queryId; // query id
+	public int queryLength; // query length
+	public char queryStrand; // query strand
+	public int queryStart; // query start
+	public int queryEnd; // query end
+	public String subjectId; // subject id
+	public int subjectLength; // subject length
+	public char subjectStrand; // subject strand
+	public int subjectStart; // subject start 
+	public int subjectEnd; // subject end
+	public int subjectLeftover; // subject leftover
 	
 	public Bl2seqOutputData() {
 		this.queryId = "";

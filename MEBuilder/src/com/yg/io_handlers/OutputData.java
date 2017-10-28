@@ -238,18 +238,6 @@ public class OutputData {
 			LOGGER.info("TSD - No good alignment found...\n");
 			return;
 		}
-//		if (data == null ) { //|| Math.abs(Integer.parseInt(data.get(8)) - position) > 10000 || Math.abs(Integer.parseInt(data.get(9)) - position) > 10000) {
-//			LOGGER.info("No good alignment found 1");
-//			return null;
-//		}
-//		if (dataOther == null || Math.abs(Integer.parseInt(data.get(6)) - Integer.parseInt(dataOther.get(6))) < 20
-//				|| Math.abs(Integer.parseInt(data.get(7)) - Integer.parseInt(dataOther.get(7))) < 20
-//				|| Math.abs(Integer.parseInt(data.get(6)) - Integer.parseInt(dataOther.get(6))) > 100000
-//				|| Math.abs(Integer.parseInt(data.get(7)) - Integer.parseInt(dataOther.get(7))) > 100000) {
-//			
-//			LOGGER.info("No good alignment found 2");
-//			return null;
-//		}
 		
 		// -----------------------------------------------------------------------------------
 		// GET TSD / IMD
@@ -324,8 +312,7 @@ public class OutputData {
 		Matcher matcherA, matcherT;
 		
 		// left flanking
-		if (//Integer.parseInt(leftFlankAlignment.get(7)) - 1 > IOParameters.FLANKING_REGION &&
-				Integer.parseInt(leftFlankAlignment.get(7)) - 1 < me.getFlankingL().length()) { // if there is an extra sequence
+		if (Integer.parseInt(leftFlankAlignment.get(7)) - 1 < me.getFlankingL().length()) { // if there is an extra sequence
 			
 			flankSeq = me.getFlankingL();
 			tr = flankSeq.substring(Integer.parseInt(leftFlankAlignment.get(7)));
@@ -387,37 +374,5 @@ public class OutputData {
 				}
 			}
 		}
-	}
-	
-	/**
-	 * NOT NEEDED 
-	 * Write the preintegration sequence
-	 * @param me
-	 * @throws IOException
-	 */
-	public static void writePreintegrationSeq(MEInsertion me) throws IOException {
-		LOGGER.info("Writing PRE-INTEGRATION sequence: " + me.getChromosome() + "_" + me.getPosition() + "\n");
-
-		// Create output directory if it doesn't exist
-		IOGeneralHelper.createOutDir("/results/preintegration_seq/");
-		// Name of the output file
-		String outfilename =  System.getProperty("user.dir") + "/results/preintegration_seq/" + IOParameters.ME_TYPE + ".pre.fa"; 
-		
-		String output = ">" + me.getChromosome() + ":" + me.getStartPos() + "-" + me.getEndPos() + 
-				"|pre\n" + me.getFlankingL() + "\n" + me.getTSD() + "\n" + me.getFlankingR() + "\n";
-		
-		try(FileWriter fw = new FileWriter(outfilename, true);
-		    BufferedWriter bw = new BufferedWriter(fw);
-		    PrintWriter out = new PrintWriter(bw))
-		{
-		    out.println(output);
-		    
-		    // Close streams
-		    out.close();
-		    bw.close();
-		} catch (IOException e) {
-			throw e;
-		}
-		
 	}
 }

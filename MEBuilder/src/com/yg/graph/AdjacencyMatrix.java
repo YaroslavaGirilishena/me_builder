@@ -7,12 +7,12 @@ package com.yg.graph;
  */
 public class AdjacencyMatrix {
 	
-	public int[][] items;
-	private int rows;
-	private int cols;
+	public int[][] items; // elements in matrix
+	private int rows; // number of rows
+	private int cols; // number of columns
 	
 	/**
-	 * Constructor
+	 * Constructor of a square matrix
 	 * @param size - size of a square matrix
 	 */
 	public AdjacencyMatrix(int size) {
@@ -41,6 +41,7 @@ public class AdjacencyMatrix {
 		
 		this.items = new int[matrix.getRows()][matrix.getCols()];
 		
+		// Copy elements
 		for (int i=0; i < matrix.getRows(); i++) {
 			for (int j=0; j < matrix.getCols(); j++) {
 				this.items[i][j] = matrix.items[i][j];

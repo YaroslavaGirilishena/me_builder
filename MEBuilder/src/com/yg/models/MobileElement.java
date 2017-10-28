@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 /**
- * Mobile elemnt general data model
+ * Mobile element general data model
  * 
  * @author Yaroslava Girilishena
  *
@@ -22,17 +22,6 @@ public class MobileElement {
 	private BigDecimal quality;
 	private ListMultimap<String, String> info = ArrayListMultimap.create();
 
-	//private List<String> ids = new ArrayList<>();
-	//private List<String> alt = new ArrayList<>();
-	//private List<String> alleles = new ArrayList<>();
-	//private List<String> filter = new ArrayList<>();
-	//private List<String> format = new ArrayList<>();
-	//private List<VcfMESample> samples = new ArrayList<>();
-	
-	// To store supporting .bed files (to search for raw reads)
-	//public List<String> bedFiles = new ArrayList<>();
-	
-	
 	public MobileElement() {}
 	
 	public MobileElement(String chromosome, long position) {
@@ -41,6 +30,7 @@ public class MobileElement {
 	}
 	
 	/**
+	 * Constructor
 	 * 
 	 * @param chromosome
 	 * @param position
@@ -58,9 +48,6 @@ public class MobileElement {
 		this.info = info;
 	}
 	
-	/**
-	 * 
-	 */
 	public String toString() {
 		String toPrint = "";
 		toPrint += "CHROM: " + this.chromosome + '\t' + 

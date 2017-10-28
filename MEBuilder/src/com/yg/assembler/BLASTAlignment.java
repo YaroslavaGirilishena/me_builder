@@ -19,16 +19,16 @@ import com.yg.utilities.IOGeneralHelper;
 import com.yg.utilities.ProcessStream;
 
 /**
- * This class formats databases for running BLAST alignment tool;
+ * This class formats consensus databases for running BLAST alignment tool;
  * Performs alignments using blastn command;
- * Filters aligned data to collect good contigs;
- * Collects info about MEI from aligned data
+ * Filters alignment data to collect good contigs;
+ * Collects info about MEI from the alignment data
  *
  * @author Yaroslava Girilishena
  *
  */
 public class BLASTAlignment {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 	
 	// -----------------------------------------------------------------------------------
 	// FORMAT THE CONSENSUS DATABASE
@@ -36,22 +36,21 @@ public class BLASTAlignment {
 	
 	/**
 	 * Every database file should be indexed ahead
-	 * @param varType
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @throws InputParametersException 
+	 * @throws InputParametersException
 	 */
 	public static void formatDB() throws IOException, InterruptedException, InputParametersException {
-		String inputDB = IOParameters.CONSENSUS_DB;
+		String inputDB = IOParameters.CONSENSUS_DB; // path to consensus database (should be provided by user)
 		// Check if db file exists
 		File input = new File(inputDB);
 		if (!input.exists() || input.isDirectory()) {
-			return;
+			throw new InputParametersException("BLASTN Formating DB ERROR: No DB file found!\n");
 		}
 			
 		LOGGER.info("BLASTN Formating DB:\n");
 		
-		// Build command for formating (indexing) db
+		// Build command for formating (indexing) DB
 		List<String> blastnCommands = new ArrayList<String>();
 		blastnCommands.add(IOParameters.BLAST_EXEC_PATH + "/makeblastdb");
 		blastnCommands.add("-dbtype");
@@ -61,6 +60,7 @@ public class BLASTAlignment {
 		blastnCommands.add("-in");
 		blastnCommands.add(inputDB);
 
+		// Run the process
 		ProcessBuilder blastnPB = new ProcessBuilder(blastnCommands);
         Process blastnProcess = blastnPB.start();
         
@@ -81,9 +81,9 @@ public class BLASTAlignment {
         
         blastnProcess.waitFor();
         
-        LOGGER.info(outputStream.getOutput() + "\n");
+        LOGGER.info(outputStream.getOutput() + "\n"); // log output
         
-        outputStream.cleanBuffer();
+        outputStream.cleanBuffer(); // clean buffer
 	}
 	
 	// -----------------------------------------------------------------------------------
@@ -91,11 +91,14 @@ public class BLASTAlignment {
 	// -----------------------------------------------------------------------------------
 	
 	/**
-	 * Align contigs obtained from assembly to consensus db
-	 * @param contigsFA
+	 * Align contigs obtained from assembly to the consensus DB
+	 * @param contigsFA - path to a fasta file with contigs
+	 * @param chromosome
+	 * @param position
+	 * @return a file with output (alignment) data 
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @throws InputParametersException 
+	 * @throws InputParametersException
 	 */
 	public static String alignContigsToConsensus(String contigsFA, String chromosome, long position) throws IOException, InterruptedException, InputParametersException {
 		// Check if input file exist
@@ -120,7 +123,7 @@ public class BLASTAlignment {
 		blastnCommands.add("-max_target_seqs");
 		blastnCommands.add("1");
 		blastnCommands.add("-perc_identity");
-		blastnCommands.add(IOParameters.MIN_CONSENSUS_IDENT.get(IOParameters.ME_TYPE).toString()); //80-90
+		blastnCommands.add(IOParameters.MIN_CONSENSUS_IDENT.get(IOParameters.ME_TYPE).toString()); //80-100
 		blastnCommands.add("-out");
 		blastnCommands.add(blastOutFile);
 		blastnCommands.add("-outfmt");
@@ -129,9 +132,11 @@ public class BLASTAlignment {
 		blastnCommands.add("1e-5"); //1e-10
 		blastnCommands.add("-word_size");
 		blastnCommands.add("7"); //9  
-//		blastnCommands.add("-F"); // for not filtering out the low complexity sequence match
-//		blastnCommands.add("F");
+		blastnCommands.add("-F"); // for not filtering out the low complexity sequence match
+		blastnCommands.add("F");
 		
+		
+		// Run the tool
 		LOGGER.info("Running BLASTN tool for " + contigsFA + "\n");
 		ProcessBuilder blastnPB = new ProcessBuilder(blastnCommands);
         Process blastnProcess = blastnPB.start();
@@ -152,7 +157,7 @@ public class BLASTAlignment {
         outputStream.start();
 
         blastnProcess.waitFor();
-        outputStream.cleanBuffer();
+        outputStream.cleanBuffer(); // clean buffer
         
         return blastOutFile;
 	}
@@ -165,12 +170,12 @@ public class BLASTAlignment {
 	/**
 	 * If one fully merged sequence is obtained - parse its alignment to the consensus
 	 * @param me
-	 * @param contigs
-	 * @param blastnOutput
+	 * @param contigs - merged sequence
+	 * @param blastnOutput - file with alignments data
 	 * @throws IOException
 	 */
 	public static void collectMEinfoForFullSeq(MEInsertion me, Map<String, FASTASeq> contigs, String blastnOutput) throws IOException {
-		// Check if input file exist
+		// Check if input file exists
     	File input = new File(blastnOutput);
     	if (!input.exists() || input.isDirectory()) {
     		me.setFull(false);
@@ -184,17 +189,19 @@ public class BLASTAlignment {
 		// Collect alignments
 		List<BLASTAlignmentData> alignments = blastnParser.blastAlignments; // parse output from blastn 
 
+		// Log alignments info
 		LOGGER.info("Total BLASTN alignments for ONE FULL sequence for " + me.getChromosome() + "_" + me.getPosition() + ": " + alignments.size() + " found\n");
+//		for (BLASTAlignmentData alignmentData: alignments) { // can be removed
+//			LOGGER.info(alignmentData.toString());
+//		}
 		
-		for (BLASTAlignmentData alignmentData: alignments) {
-			LOGGER.info(alignmentData.toString());
-		}
-		
+		// If there is no alignments
 		if (alignments == null || alignments.size() == 0) {
-			me.setFull(false);
+			me.setFull(false); // set full sequence found to false
 			return;
 		}
 		
+		// Search for a valid alignment
 		int validAlignmentIdx = -1;
 		for (int i=0; i < alignments.size(); i++) {
 			if (alignments.get(i).getQend() <= 300 || alignments.get(i).getQstart() >= contigs.get(alignments.get(i).getQseqid()).getSequence().length() - 300) {
@@ -208,12 +215,11 @@ public class BLASTAlignment {
 			}
 		}
 		
-		System.out.println("\nValid alignment idx: " + validAlignmentIdx + "\n");
 		if (validAlignmentIdx == -1) {
 			// If none of the alignments are valid
-			me.setFull(false); //set full sequence found to false
+			me.setFull(false); // set full sequence found to false
 		} else {
-			me.setFull(true); //set full sequence found to true
+			me.setFull(true); // set full sequence found to true
 			me.setStrand(me.getConsensusAlignments().get(0).getStrand()); // set strand
 			
 			// Set sequence depending on MEI type
@@ -231,7 +237,7 @@ public class BLASTAlignment {
 				me.setFlankingR(contigs.get(alignments.get(validAlignmentIdx).getQseqid()).getSequence().substring((int)alignments.get(validAlignmentIdx).getQend()));
 				
 			} else {
-				System.out.println("\nSet length of aligned insertion: " + alignments.get(validAlignmentIdx).getLength() + "\n" + "Sequence full length: " + contigs.get(alignments.get(validAlignmentIdx).getQseqid()).getSequence().length());
+				//System.out.println("\nSet length of aligned insertion: " + alignments.get(validAlignmentIdx).getLength() + "\n" + "Sequence full length: " + contigs.get(alignments.get(validAlignmentIdx).getQseqid()).getSequence().length());
 				me.setLength(alignments.get(validAlignmentIdx).getLength()); // set the length of aligned insertion
 				
 				if (contigs.get(alignments.get(validAlignmentIdx).getQseqid()).getSequence().length() - IOParameters.FLANKING_REGION > IOParameters.FLANKING_REGION) {
@@ -260,12 +266,12 @@ public class BLASTAlignment {
 	 * If two contigs are assembled, align them to consensus and get MEI info
 	 * Check for gap in the alignment 
 	 * @param me
-	 * @param contigs
-	 * @param blastnOutput
+	 * @param contigs - left and right merged sequences
+	 * @param blastnOutput - file with alignments data
 	 * @throws IOException
 	 */
 	public static void collectMEinfoForTwoPaths(MEInsertion me, Map<String, FASTASeq> contigs, String blastnOutput) throws IOException {
-		// Check if input file exist
+		// Check if input file exists
     	File input = new File(blastnOutput);
     	if (!input.exists() || input.isDirectory()) {
     		LOGGER.info("No file with alignment to the consensus: " + blastnOutput);
@@ -281,7 +287,7 @@ public class BLASTAlignment {
 		List<BLASTAlignmentData> alignments = blastnParser.blastAlignments; // parse output from blastn 
 
 		LOGGER.info("Total BLASTN alignments for TWO sequences for " + me.getChromosome() + "_" + me.getPosition() + ": " + alignments.size() + " found\n");
-				
+		
 		if (alignments == null || alignments.size() == 0) {
 			LOGGER.info("No alignments found\n");
 			me.setFull(false);
@@ -896,7 +902,4 @@ OPTIONAL ARGUMENTS
    Execute search remotely?
     * Incompatible with:  gilist, seqidlist, negative_gilist, subject_loc,
    num_threads
-
  */
-
-

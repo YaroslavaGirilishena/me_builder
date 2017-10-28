@@ -226,3 +226,23 @@ org.osgi.framework.BundleException: Unable to acquire the state change lock for 
 	at org.eclipse.jdt.internal.core.builder.SourceFile.getContents(SourceFile.java:79)
 	at org.eclipse.jdt.internal.compiler.ReadManager.run(ReadManager.java:174)
 	at java.lang.Thread.run(Thread.java:745)
+!SESSION 2017-10-05 14:44:09.355 -----------------------------------------------
+eclipse.buildId=4.5.2.M20160212-1500
+java.version=1.8.0_102
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_CA
+Framework arguments:  -product org.eclipse.epp.package.java.product -keyring /Users/YG/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.java.product -keyring /Users/YG/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2017-10-05 14:44:37.921
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+!SESSION 2017-10-28 11:56:32.752 -----------------------------------------------
+eclipse.buildId=4.5.2.M20160212-1500
+java.version=1.8.0_102
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_CA
+Framework arguments:  -product org.eclipse.epp.package.java.product -keyring /Users/YG/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.java.product -keyring /Users/YG/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2017-10-28 11:56:49.870
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -15,12 +14,11 @@ import org.apache.commons.io.FileUtils;
 import com.yg.exceptions.FileException;
 import com.yg.exceptions.InputParametersException;
 import com.yg.graph.AdjacencyMatrix;
+import com.yg.graph.Edge;
 import com.yg.graph.Graph;
 import com.yg.graph.Node;
 import com.yg.graph.Tree;
-import com.yg.graph.dijkstra.DijkstraAlgorithm;
-import com.yg.graph.dijkstra.Edge;
-import com.yg.graph.dijkstra.Vertex;
+import com.yg.graph.Vertex;
 import com.yg.io_handlers.IOParameters;
 import com.yg.io_handlers.InputDataHandler;
 import com.yg.models.Bl2seqOutputData;
@@ -31,10 +29,10 @@ import com.yg.parsers.FastaParser;
 import com.yg.utilities.IOGeneralHelper;
 
 /**
- * This class aligns all contigs and flanking sequences all-against-all
- * Filter out contigs that are fully aligned to the reference
- * Searches for the path between the left and right flanking
- * Validate overlaps between contigs
+ * This class aligns all contigs and flanking sequences all-against-all;
+ * Filters out contigs that are fully aligned to the reference;
+ * Searches for paths between the left and right flanking;
+ * Validates overlaps between contigs;
  * Merges contigs from a valid path into a scaffold
  * 
  * @author Yaroslava Girilishena
@@ -42,7 +40,7 @@ import com.yg.utilities.IOGeneralHelper;
  */
 
 public class BridgeAssembly {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 	
 	private List<String> contigsFiles;
 	
@@ -52,7 +50,6 @@ public class BridgeAssembly {
     public AdjacencyMatrix adjacencyMatrix; // for tree path
     public AdjacencyMatrix adjacencyMatrixSymmetric; //for graph path
     
-    private DijkstraAlgorithm dijkstra;
     private Graph graph;
     
     private MEInsertion me;
@@ -167,7 +164,7 @@ public class BridgeAssembly {
     			String leftMergedContigsFile = null, rightMergedContigsFile = null;
     			
     			AdjacencyMatrix tempMatrix = new AdjacencyMatrix(adjacencyMatrix);
-    			adjacencyMatrix.clearCol(adjacencyMatrix.getCols()-1); // clear last column to avoid path to the right flanking
+    			adjacencyMatrix.clearCol(adjacencyMatrix.getCols() - 1); // clear last column to avoid path to the right flanking
     			
     			System.out.println("\nAdjacency matrix for contigs: " + contigsFiles.size() + "\n" + adjacencyMatrix.toString());
     			
@@ -193,7 +190,7 @@ public class BridgeAssembly {
 
     			// Adjust contigs list
     			String temp = contigsFiles.get(0);
-    			contigsFiles.set(0, contigsFiles.get(contigsFiles.size()-1));
+    			contigsFiles.set(0, contigsFiles.get(contigsFiles.size() - 1));
     			contigsFiles.set(contigsFiles.size()-1, temp);
     			
     			// Create a tree and find the longest existing path from the right flank
@@ -317,6 +314,7 @@ public class BridgeAssembly {
     }
     
     /**
+     * Merge contigs from a path
      * 
      * @param contigsFiles
      * @param bl2seqOutputDir
@@ -540,7 +538,6 @@ public class BridgeAssembly {
 
     	// Define the adjacency matrix
     	adjacencyMatrix = new AdjacencyMatrix(contigsFiles.size());
-    	//adjacencyMatrixSymmetric = new AdjacencyMatrix(contigsFiles.size());
 
     	String outFile;
     	// For each contigs pair, run the alignment tool
@@ -575,9 +572,6 @@ public class BridgeAssembly {
 					
 					// Save aligned pair into adjacency matrix 
 					adjacencyMatrix.items[i][j] = bl2seqRes.subjectLeftover;
-					// Save aligned pair into symmetric adjacency matrix 
-					//adjacencyMatrixSymmetric.items[i][j] = Math.abs(bl2seqRes.subjectEnd - bl2seqRes.subjectStart);
-					//adjacencyMatrixSymmetric.items[j][i] = Math.abs(bl2seqRes.subjectEnd - bl2seqRes.subjectStart);
 					
 				} catch (IOException | InputParametersException | InterruptedException e) {
 					e.printStackTrace();
@@ -787,72 +781,10 @@ public class BridgeAssembly {
     }
     
     /**
-     * Find the shortest path in a graph (old approach)
-     * @return
-     */
-    public LinkedList<Vertex> findShortestPath(int from, int to) {
-    	nodes = new ArrayList<Vertex>();
-        edges = new ArrayList<Edge>();
-        
-        // Build a list of vertices
-        for (int i=0; i<contigsFiles.size(); i++) {
-        	// vertex id - full path to the contig file; vertex data - just the name of the contig
-        	Vertex location = new Vertex(contigsFiles.get(i), contigsFiles.get(i).substring(contigsFiles.get(i).lastIndexOf("/") + 1, contigsFiles.get(i).lastIndexOf(".")));
-        	nodes.add(location);
-        }
-        
-        // Print vertices
-        //printVertices();
-        
-        // Build a list of edges
-        for (int i=0; i<adjacencyMatrixSymmetric.getRows(); i++) {
-        	for (int j=0; j<adjacencyMatrixSymmetric.getCols(); j++) {
-        		if (adjacencyMatrixSymmetric.items[i][j] > 0) {
-        			createEdge(nodes.get(i).getData() + "_" + nodes.get(j).getData(), i, j, -adjacencyMatrixSymmetric.items[i][j]);
-        		}
-        	}
-        }
-        
-        // Print edges to test
-        //printEdges();
-                
-        // Create graph where nodes are contigs and edges represent overlapping contigs
-        graph = new Graph(nodes, edges);
-        dijkstra = new DijkstraAlgorithm(graph);
-        // Try to build the shortest path from the left flanking to the right flanking
-        dijkstra.execute(nodes.get(from));
-        LinkedList<Vertex> path = dijkstra.getPath(nodes.get(to));
-        
-        LOGGER.info("\nSHORTEST PATH for " + chromosome + "_" + position + ": ");
-        if (path != null && path.size() !=0 ){
-	        for (Vertex vertex : path) {
-	        	LOGGER.info(vertex + " ");
-	        }
-	        LOGGER.info("\n");
-        } else {
-        	LOGGER.info("No path found..." + chromosome + "_" + position);
-        }
-        
-        return path;
-    }
-    
-    
-    /**
-     * Create an edge between two nodes (old approach)
-     * @param laneId
-     * @param sourceLocNo
-     * @param destLocNo
-     * @param duration
-     */
-    private void createEdge(String laneId, int sourceLocNo, int destLocNo, int weight) {
-        Edge lane = new Edge(laneId, nodes.get(sourceLocNo), nodes.get(destLocNo), weight);
-        edges.add(lane);
-    }
-    
-    /**
      * Print a list of vertices
      */
-    public void printVertices() {
+    @SuppressWarnings("unused")
+	private void printVertices() {
     	 System.out.println("\n NODES:");
          for (Vertex v: nodes) {
          	System.out.println(v.toString());
@@ -862,7 +794,8 @@ public class BridgeAssembly {
     /**
      * Print a list of edges
      */
-    public void printEdges() {
+    @SuppressWarnings("unused")
+	private void printEdges() {
     	System.out.println("\n EDGES:");
         for (Edge e: edges) {
         	System.out.println(e.toString());
@@ -915,7 +848,7 @@ public class BridgeAssembly {
      * @param root
      * @param row
      */
-    public void createTree(Node<String> root, int row) {
+    private void createTree(Node<String> root, int row) {
     	if (row >= adjacencyMatrix.items[0].length - 1) {
     		return;
     	}
@@ -946,7 +879,8 @@ public class BridgeAssembly {
      * @param root
      * @param row
      */
-    public void printTree(Node<String> root, int row) {
+    @SuppressWarnings("unused")
+	private void printTree(Node<String> root, int row) {
     	if (row >= contigsFiles.size() - 1) {
     		return;
     	}

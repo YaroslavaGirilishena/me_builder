@@ -21,7 +21,8 @@ import com.yg.models.FASTASeq;
 import com.yg.utilities.IOGeneralHelper;
 
 /**
- * This class parses .fasta files and returns list of FASTASeq instances
+ * This class parses fasta files and returns list of FASTASeq instances;
+ * Extracts flanking sequences
  * 
  * @author Yaroslava Girilishena
  *
@@ -89,73 +90,6 @@ public class FastaParser {
     	return fastaSequences;
     }
     
-    /**
-     * Parse the reference sequence reading only necessary lines
-     * Custom approach, don't work with non-standard genome sequences
-     * @param filename
-     * @param start
-     * @param interval
-     * @return
-     * @throws IOException
-     * @throws FileException 
-     */
-//	public FASTASeq parseRefFile(String filename, int start, int interval) throws IOException, FileException {
-//    	BufferedReader reader = new BufferedReader(new FileReader(filename));
-//    	
-//    	FASTASeq fastaSequence = new FASTASeq();
-//    	
-//    	String desc = null;
-//    	String seq = null;
-//    	
-//		String line = reader.readLine();
-// 
-//		if (line == null) {
-//			reader.close();
-//			//LOGGER.severe("ERROR - FastaParser: file + " + filename + " is an empty file" );
-//			throw new FileException( "ERROR - FastaParser: file + " + filename + " is an empty file" );
-//		}
-// 
-//		if (line.charAt(0) != '>') {
-//			reader.close();
-//			//LOGGER.severe("ERROR - FastaParser: first line of " + filename + " should start with '>'");
-//			throw new FileException( "ERROR - FastaParser: first line of " + filename + " should start with '>'" );
-//		} else {
-//			desc = line.trim().substring(1, line.length()); // remove '>' character in front
-//		}
-//        
-//		line = reader.readLine().trim();
-//		int numberOfBases = line.length(); // number of bases in one line
-//		
-//		int skipLines = start / numberOfBases - 1; // how many lines to skip until we reach the location
-//		
-//		// Skip lines, don't save them
-//		for (int i=0; i<skipLines; i++) {
-//			reader.readLine();
-//		}
-//		
-//		int startChar = start - numberOfBases*(skipLines+1); // start character in the starting line
-//		if (startChar != 0) {
-//			startChar--;
-//		}
-//		int readLines = (startChar + interval) / numberOfBases + 1; // how many lines contain necessary sequence
-//		
-//		// Read lines that contain sequence
-//		StringBuffer buffer = new StringBuffer();
-//		for (int i=0; i<readLines; i++) {
-//			buffer.append(reader.readLine().trim());
-//		}
-//		
-//		// Get the sequence of required length
-//		System.out.println("Getting sequence from positions: " + (numberOfBases*(skipLines+1)) + "-" + (numberOfBases*(skipLines+1) + interval));
-//		seq = buffer.toString().substring(startChar, startChar + interval);
-//		buffer.setLength(0);
-//		
-//		fastaSequence.setDescription(desc);
-//		fastaSequence.setSequence(seq);
-//    	
-//		reader.close();
-//    	return fastaSequence;
-//    }
     
     /**
      * Parse the reference genome to extract the sequence from the given range

@@ -23,20 +23,22 @@ import com.yg.exceptions.InputParametersException;
  *
  */
 public class UserInputHandler {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 
 	/**
 	 * Parse CLI parameters and set them to global values
-	 * @param args
+	 * @param args - array of parameters
 	 * @return
 	 * @throws InputParametersException 
 	 */
 	public static boolean parseCLParameters(String[] args) throws InputParametersException {
+		// If no parameters specified, return help message
 		if (args == null || args.length == 0) {
 			printHelp();
 			return false;
 		}
 		
+		// HashMap of parameters
 		Map<String, String> clParameters = new HashMap<String, String>();
 		
 		// Asked for help message
@@ -66,6 +68,7 @@ public class UserInputHandler {
 			throw new InputParametersException("PARAMETERS ERROR: Not enough parameters");
 		}
 		
+		// Parse parameters values
 		for (int i=0; i < args.length - 1; i=i+2) {
 			clParameters.put(args[i], args[i+1]);
 			LOGGER.info("CLI parameter: " + args[i] + "=" + clParameters.get(args[i]));
@@ -94,12 +97,14 @@ public class UserInputHandler {
 			
 			// Log all parameters
 			LOGGER.info("User's parameters: " + clParameters.toString());
+		
 		} else {
 			// Setup list of .bam files with raw reads
 			if (IOParameters.COLLECT_READS) {
 				IOParameters.getListOfBamFiles();
 			}
 						
+			// If only one location is specified
 			if (clParameters.containsKey("-c") && clParameters.containsKey("-p")) {
 				int position = Integer.parseInt(clParameters.get("-p"));
 				
@@ -119,6 +124,8 @@ public class UserInputHandler {
 			} else {
 				IOParameters.INPUT_FILE = true;
 			}
+			
+			// If start and end positions are specified
 			if (clParameters.containsKey("-startLoci") && clParameters.containsKey("-endLoci")) {
 				IOParameters.SE_SPECIFIED = true;
 				int startLoci = Integer.parseInt(clParameters.get("-startLoci"));
@@ -128,9 +135,7 @@ public class UserInputHandler {
 					startLoci = 0;
 					endLoci = 1;
 				}
-//				if (endLoci > Variants.listOfMEI.size()) {
-//					endLoci = Variants.listOfMEI.size();
-//				}
+				
 				if (startLoci > endLoci) {
 					throw new InputParametersException("PARAMETERS ERROR: Parameters do not meet the requirements startLoci > endLoci");
 				}
@@ -165,7 +170,6 @@ public class UserInputHandler {
 				"-CDHITPath: path to cd-hit executable, required\n" +
 				"-CAP3path: path to cap3 executable, required\n" +
 				"-connfig: path to the configuration faile with all parameters specified there. optional\n" +
-				//"-threads: number of threads for splitting the input, default: 1 (no splitting)\n"+
 				// genome version
 				// -dev 1 
 				
@@ -247,7 +251,7 @@ public class UserInputHandler {
 	/**
 	 * Parse the config file with input parameters 
 	 * and return Map of key-values
-	 * @param propertiesFile
+	 * @param propertiesFile - configuration file
 	 * @return
 	 * @throws IOException
 	 */
@@ -257,7 +261,6 @@ public class UserInputHandler {
 		
 		try {
 			Properties prop = new Properties();
-			//String propFileName = System.getProperty("user.dir") + "/src/com/yg/input_output/config.properties";
 			File inputFile = new File(propertiesFile);
 			if (!inputFile.exists() || inputFile.isDirectory()) {
 				throw new FileException("Config file with parameters " + propertiesFile + " not found!");

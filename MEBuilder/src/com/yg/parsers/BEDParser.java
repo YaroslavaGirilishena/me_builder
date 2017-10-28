@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
-import com.yg.models.RefEvent;
+import com.yg.models.BEDData;
 import com.yg.utilities.IOGeneralHelper;
 import com.yg.utilities.PatternSplitter;
 
@@ -25,19 +25,19 @@ import com.yg.utilities.PatternSplitter;
  *
  */
 public class BEDParser {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 	
 	public String filename;
-	private List<RefEvent> nonRefSequences;
+	private List<BEDData> listOfdata;
 	private boolean usingScore;
 	
 	public BEDParser(String filename, boolean score){
 		this.filename = filename;
-		this.nonRefSequences = new ArrayList<RefEvent>();
+		this.listOfdata = new ArrayList<BEDData>();
 		this.usingScore = score;
 	}
 	
-	public List<RefEvent> parse() throws IOException {
+	public List<BEDData> parse() throws IOException {
 		LOGGER.info("Parsing .BED file: " + this.filename + "\n");
     	try {
     		BufferedReader reader = new BufferedReader(new FileReader(this.filename));
@@ -51,7 +51,7 @@ public class BEDParser {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 		LOGGER.info("Finished parsing .BED file: " + this.filename + "\n");
-    	return nonRefSequences;
+    	return listOfdata;
     }
 	
 	private boolean parseBEDFile(BufferedReader reader) throws IOException {
@@ -115,13 +115,7 @@ public class BEDParser {
 				strand = data.get(strandIndex).charAt(0);
 			}
 			
-			// Put reference event into global list
-//			if (this.usingScore) {
-//				Variants.putRepeatMaskRefEvent(new RefEvent(chrom, chromStart, chromEnd, name, score, strand));
-//			} else {
-//				nonRefSequences.add(new RefEvent(chrom, chromStart, chromEnd, name, score, strand));
-//			}
-			nonRefSequences.add(new RefEvent(chrom, chromStart, chromEnd, name, score, strand));
+			listOfdata.add(new BEDData(chrom, chromStart, chromEnd, name, score, strand));
 			
     	} catch(IOException e) {
     		System.out.println("Error when reading " + this.filename);
@@ -158,10 +152,10 @@ public class BEDParser {
 	 * @throws IOException
 	 */
 	private static boolean parseIntoFiles(BufferedReader reader) throws IOException {
-		//Read line
+		// Read line
 		String line = reader.readLine();
  
-		//Check if line is present and have been read, if not - probably the file reached an end
+		// Check if line is present and has been read
 		if (line == null) {
 			return false;
 		}
@@ -171,26 +165,26 @@ public class BEDParser {
 
 		// Get subtype of the Alu
 		String aluSubtype = "";
-		//All Alu data is always in the fourth column
+		// Alu data is always in the fourth column
 		if (!data.get(3).equals(".")) {
-			//Parse out the fourth element to get AluType from it
+			// Parse out the fourth element to get AluType from it
     		List<String> nameData = PatternSplitter.toList(PatternSplitter.PTRN_COLON_SPLITTER, data.get(3));
-    		//Assign Alu subtype, which should be the third element
+    		// Assign Alu subtype, which should be the third element
     		aluSubtype = nameData.get(2);
 		} 
 	
 		try {
-			//This is the directory we will save our parsed files to
+			// This is the directory we will save our parsed files to
 			String directory = System.getProperty("user.dir") + "/src/com/yg/input/ref/ParsedAlu/";
 			IOGeneralHelper.createOutDir("/src/com/yg/input/ref/ParsedAlu/");
 			// File with the current Alu subtype
 			String fileName = "hg19_" + aluSubtype + ".BED";
 			//Check if file exists
 			if (new File(directory, fileName).exists()) {
-				//If exists - append to it
+				// If exists - append to it
 			    Files.write(Paths.get(directory + fileName), (line + "\n").getBytes(), StandardOpenOption.APPEND);
 			} else {
-				//If doesn't exist - create and write to it
+				// If doesn't exist - create and write to it
 			    Files.write(Paths.get(directory + fileName), (line + "\n").getBytes(), StandardOpenOption.CREATE);
 			}
 		} catch (IOException e) {

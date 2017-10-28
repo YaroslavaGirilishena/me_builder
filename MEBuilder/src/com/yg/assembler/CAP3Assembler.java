@@ -18,28 +18,29 @@ import com.yg.parsers.FastaParser;
 import com.yg.utilities.ProcessStream;
 
 /**
- * This class removes redundant reads using cd-hit before the assembly; 
+ * This class removes redundant reads using cd-hit-est before the assembly; 
  * does assembly using CAP3 tool; 
- * parses obtained contigs into separate files
+ * parses obtained contigs into separate files.
  * 
  * @author Yaroslava Girilishena
  *
  */
 public class CAP3Assembler {
-	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME); // init logger
 	
 	/**
-	 * Do assembly using cap3 tool to create breakpoints contigs 
-	 * @param varType
+	 * Do assembly using cap3 tool to create contigs
 	 * @param chromosome
 	 * @param position
-	 * @return
+	 * @return a file with assembled contigs
 	 * @throws IOException
 	 * @throws InputParametersException
 	 * @throws InterruptedException
 	 */
 	public static String doAssembly(String chromosome, long position) throws IOException, InputParametersException, InterruptedException {
-		String inputFile = removeRedundantReads(chromosome, position);
+		String inputFile = removeRedundantReads(chromosome, position); // remove redundant reads
+		
+		// Setup output directory
 		String outputDirectory = System.getProperty("user.dir") + "/intermediate_output/cap3_assembly/" + IOParameters.ME_TYPE + "/" + IOParameters.ME_TYPE + "." + chromosome + "_" + position;
 
 		// Check if input file exists
@@ -70,10 +71,11 @@ public class CAP3Assembler {
  		cap3Commands.add(IOParameters.PERC_IDENTITY_CAP3.toString()); // 90
  		cap3Commands.add("-t"); // an upper limit of word matches between a read and other reads. Increasing the value would result in more accuracy, however this could slow down the program. The specified value should be more than 0.
  		cap3Commands.add("300"); 
- 		//cap3Commands.add("-z"); // how many reads support it (small because we removed redundant reads)
- 		//cap3Commands.add("1");
+ 		cap3Commands.add("-z"); // how many reads support it (small because we removed redundant reads)
+ 		cap3Commands.add("1");
  		cap3Commands.add("&>cap3_stats.log");
  		
+ 		// Run the tool
  	    ProcessBuilder cap3PB = new ProcessBuilder(cap3Commands);
         Process cap3Process = cap3PB.start();
          
@@ -81,6 +83,7 @@ public class CAP3Assembler {
         ProcessStream errStream = new ProcessStream(cap3Process.getErrorStream(), "ERROR");            
         errStream.start();
          
+        // Catch error
         if (errStream.getOutput() != null && !errStream.getOutput().equals("") && errStream.getOutput().length() != 0) {
          	throw new InputParametersException("CAP3 ERROR:\n" + errStream.getOutput());
         } else {
@@ -93,19 +96,85 @@ public class CAP3Assembler {
          
          cap3Process.waitFor();
          
-         outputStream.cleanBuffer();
+         outputStream.cleanBuffer(); // clean buffer
          
          // Return output file name
          return outputDirectory + "/" + IOParameters.ME_TYPE + "." + chromosome + "_" + position + ".cdhit.cap.contigs";
 	}
 	
 	/**
+	 * Run cd-hit tool to remove redundant reads before assembly
+	 * @param chromosome
+	 * @param position
+	 * @return a file with reads
+	 * @throws InputParametersException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private static String removeRedundantReads(String chromosome, long position) throws InputParametersException, IOException, InterruptedException {		
+		// Setup input file
+		String inputFile = System.getProperty("user.dir") + "/disc_reads/" + chromosome + "_" + position + IOParameters.OUTPUT_FORMAT;
+		//Setup output directory
+		String outputDirectory = System.getProperty("user.dir") + "/intermediate_output/cap3_assembly/" + IOParameters.ME_TYPE + "/" + IOParameters.ME_TYPE + "." + chromosome + "_" + position;
+		// Setup output file
+		String outputFile = outputDirectory + "/" + IOParameters.ME_TYPE + "." + chromosome + "_" + position + ".cdhit";
+
+		// Check if input file exists
+		File input = new File(inputFile);
+		if (!input.exists() || input.isDirectory()) {
+			return null;
+		}
+		// Create output directory if it doesn't exist
+		Path path = Paths.get(outputDirectory);
+        if (!Files.exists(path)) {
+           Files.createDirectories(path);
+        }
+		        
+		// Commands for running cd-hit-est
+ 		List<String> cdhitCommands = new ArrayList<String>();
+ 		cdhitCommands.add(IOParameters.CDHIT_TOOL_PATH + "/cd-hit-est");
+ 		cdhitCommands.add("-i");
+ 		cdhitCommands.add(inputFile);
+ 		cdhitCommands.add("-c");
+ 		cdhitCommands.add(IOParameters.PERC_IDENTITY_CDHIT.toString());
+ 		cdhitCommands.add("-o");
+ 		cdhitCommands.add(outputFile);
+
+ 		// Run the process
+ 	    ProcessBuilder cdhitPB = new ProcessBuilder(cdhitCommands);
+        Process cdhitProcess = cdhitPB.start();
+         
+        // Collect error messages
+        ProcessStream errStream = new ProcessStream(cdhitProcess.getErrorStream(), "ERROR");            
+        errStream.start();
+         
+        // Catch error
+        if (errStream.getOutput() != null && !errStream.getOutput().equals("") && errStream.getOutput().length() != 0) {
+         	throw new InputParametersException("CDHIT ERROR:\n" + errStream.getOutput());
+        } else {
+         	errStream.cleanBuffer();
+        }
+         
+        // Collect output
+        ProcessStream outputStream = new ProcessStream(cdhitProcess.getInputStream(), "OUTPUT");
+        outputStream.start();
+         
+        cdhitProcess.waitFor();
+         
+        outputStream.cleanBuffer(); // clean buffer
+		
+		return outputFile;
+	}
+	
+	/**
 	 * Parse a file with contigs into separate files for each contig
-	 * @param fileWithContigs
-	 * @throws IOException 
+	 * @param fileWithContigs - file with contigs
+	 * @param contigsDir - destination directory
+	 * @return destination directory
+	 * @throws IOException
 	 */
 	public static String parseContigsIntoSepFiles(String fileWithContigs, String contigsDir) throws IOException {
-		// Check if input file exist
+		// Check if input file exists
 		if (fileWithContigs == null) {
 			return null;
 		}
@@ -145,68 +214,6 @@ public class CAP3Assembler {
 		return contigsDir;
 	}
 	
-	/**
-	 * Using cd-hit tool to remove redundant reads before running assembly
-	 * @param varType
-	 * @param chromosome
-	 * @param position
-	 * @return
-	 * @throws InputParametersException
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-	private static String removeRedundantReads(String chromosome, long position) throws InputParametersException, IOException, InterruptedException {		
-		// Setup input file
-		String inputFile = System.getProperty("user.dir") + "/disc_reads/" + chromosome + "_" + position + IOParameters.OUTPUT_FORMAT;
-		//Setup output directory
-		String outputDirectory = System.getProperty("user.dir") + "/intermediate_output/cap3_assembly/" + IOParameters.ME_TYPE + "/" + IOParameters.ME_TYPE + "." + chromosome + "_" + position;
-		// Setup output file
-		String outputFile = outputDirectory + "/" + IOParameters.ME_TYPE + "." + chromosome + "_" + position + ".cdhit";
-
-		// Check if input file exist
-		File input = new File(inputFile);
-		if (!input.exists() || input.isDirectory()) {
-			return null;
-		}
-		// Create output directory if it doesn't exist
-		Path path = Paths.get(outputDirectory);
-        if (!Files.exists(path)) {
-           Files.createDirectories(path);
-        }
-		        
-		// Commands for running cd-hit
- 		List<String> cdhitCommands = new ArrayList<String>();
- 		cdhitCommands.add(IOParameters.CDHIT_TOOL_PATH + "/cd-hit-est");
- 		cdhitCommands.add("-i");
- 		cdhitCommands.add(inputFile);
- 		cdhitCommands.add("-c");
- 		cdhitCommands.add(IOParameters.PERC_IDENTITY_CDHIT.toString());
- 		cdhitCommands.add("-o");
- 		cdhitCommands.add(outputFile);
-
- 	    ProcessBuilder cdhitPB = new ProcessBuilder(cdhitCommands);
-        Process cdhitProcess = cdhitPB.start();
-         
-        // Collect error messages
-        ProcessStream errStream = new ProcessStream(cdhitProcess.getErrorStream(), "ERROR");            
-        errStream.start();
-         
-        if (errStream.getOutput() != null && !errStream.getOutput().equals("") && errStream.getOutput().length() != 0) {
-         	throw new InputParametersException("CDHIT ERROR:\n" + errStream.getOutput());
-        } else {
-         	errStream.cleanBuffer();
-        }
-         
-        // Collect output
-        ProcessStream outputStream = new ProcessStream(cdhitProcess.getInputStream(), "OUTPUT");
-        outputStream.start();
-         
-        cdhitProcess.waitFor();
-         
-        outputStream.cleanBuffer();
-		
-		return outputFile;
-	}
 }
 
 /*
