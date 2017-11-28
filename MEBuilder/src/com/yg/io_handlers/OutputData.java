@@ -25,7 +25,7 @@ import com.yg.utilities.PatternSplitter;
 
 /**
  * This class formats and writes output data
- * Deducts TSD/IMD and transductions 
+ * Deducts TSD/IMD and transductions sequences
  * 
  * @author Yaroslava Girilishena
  *
@@ -214,6 +214,8 @@ public class OutputData {
 			continue;
 		}
 		
+		// # Fields: Query id, Subject id, % identity, alignment length, mismatches, gap openings, 6 - q. start, 7 - q. end, 8 - s. start, 9 - s. end, e-value, bit score
+		
 		List<List<String>> alignments = new ArrayList<List<String>>();
 		// Get the first alignment
 		List<String> data = PatternSplitter.toList(PatternSplitter.PTRN_TAB_SPLITTER, line.trim());
@@ -314,15 +316,16 @@ public class OutputData {
 		// left flanking
 		if (Integer.parseInt(leftFlankAlignment.get(7)) - 1 < me.getFlankingL().length()) { // if there is an extra sequence
 			
-			flankSeq = me.getFlankingL();
-			tr = flankSeq.substring(Integer.parseInt(leftFlankAlignment.get(7)));
+			flankSeq = me.getFlankingL(); // at this point flanking sequence will have extra bases (if there are ones) that are not part of consensus MEI
+			tr = flankSeq.substring(IOParameters.FLANKING_REGION); //Integer.parseInt(leftFlankAlignment.get(7)));
 			
 			// poly T/A
         	matcherA = Pattern.compile("\\A[a]+\\z").matcher(tr);
         	matcherT = Pattern.compile("\\A[t]+\\z").matcher(tr);
     
-			me.setFlankingL(flankSeq.substring(0, Integer.parseInt(leftFlankAlignment.get(7))));
+			me.setFlankingL(flankSeq.substring(0, IOParameters.FLANKING_REGION)); //Integer.parseInt(leftFlankAlignment.get(7))));
 			if (me.getStrand() == '+') {
+				// If the leftover is not a polyT
 				if (!matcherT.find()) {
 					me.setTransduction5(tr);
 				}
@@ -330,6 +333,7 @@ public class OutputData {
 				
 				LOGGER.info("5' TR: " + me.getTransduction5() + " " + me.getTransduction5().length() + " bases");
 			} else {
+				// If the leftover is not a polyA
 				if (!matcherA.find()) {
 					me.setTransduction3(tr);
 				}
@@ -344,7 +348,7 @@ public class OutputData {
 		if (lengthOfRefAlignment > IOParameters.FLANKING_REGION &&
 				me.getFlankingR().length() > lengthOfRefAlignment) { // if there is an extra sequence
 			
-			flankSeq = me.getFlankingR();
+			flankSeq = me.getFlankingR(); // at this point flanking sequence will have extra bases (if there are ones) that are not part of consensus MEI
 			tr = flankSeq.substring(0, flankSeq.length() - lengthOfRefAlignment);
 			
 			// poly T/A

@@ -5,4 +5,5 @@
 <fullyQualifiedTypeName name="com.yg.graph.Edge"/>
 <fullyQualifiedTypeName name="com.yg.graph.Vertex"/>
 <fullyQualifiedTypeName name="com.yg.utilities.PatternSplitter"/>
+<fullyQualifiedTypeName name="com.yg.io_handlers.IOParameters"/>
 </qualifiedTypeNameHistroy>
