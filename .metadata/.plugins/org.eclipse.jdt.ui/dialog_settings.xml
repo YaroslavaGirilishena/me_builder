@@ -13,7 +13,7 @@
 		<item value="1" key="updateSimilarElementsMatchStrategy"/>
 	</section>
 	<section name="FatJarPackageWizard">
-		<item value="/Users/YG/Developer/MEBuilder/me_builder" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
+		<item value="/Users/YG/Developer/MEBuilder/me_builder.xml" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
 		<item value="Main - MEBuilder" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
 		<item value="MEBuilder/MEBuilder.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>

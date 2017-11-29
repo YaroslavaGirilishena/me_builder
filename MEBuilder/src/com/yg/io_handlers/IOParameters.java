@@ -112,7 +112,7 @@ public class IOParameters {
 	public static List<String> LIST_OF_BAM_FILES = new ArrayList<String>(); // list of .bam files collected from folder
 	
 	// SAMTOOLS
-	public static String SAMTOOLS_PATH = "/usr/local/bin/"; // path to SAMtools
+	public static String SAMTOOLS_PATH = ""; //"/usr/local/bin/"; // path to SAMtools
 	// Parameters for running
 	public static boolean EXCLUDE_RANDOM = false; // option for whether or not to exclude non-standard chromosomes
 	public static int QR = 2; // default minimal number of reads
@@ -135,29 +135,29 @@ public class IOParameters {
 	public static int MIN_NUM_OF_BASES_ABOVE_QUAL = 48; // -L minimal number of bases with quality above -q N, default: 48
 
 	// VELVET
-	public static String VELVET_TOOL_PATH = "/usr/local/bin"; // path to velvet
+	public static String VELVET_TOOL_PATH = "/work/lianglab/bin"; //"/usr/local/bin"; // path to velvet
 	public static Integer HASH_LENGTH = 21; // k-mer length
 	public static Integer MIN_CONTIG_LENGTH_TO_KEEP = 200;
 	public static Integer INS_LENGTH = 300;
 	
 	// CDHIT
-	public static String CDHIT_TOOL_PATH = "/usr/local/bin"; // path to cd-hit
+	public static String CDHIT_TOOL_PATH = "/work/lianglab/bin/cdhit/"; //"/usr/local/bin"; // path to cd-hit
 	public static Double PERC_IDENTITY_CDHIT = 0.98; // percentage of identity 
 
 	// CAP3
-	public static String CAP3_TOOL_PATH = "/usr/local/bin"; // path for cap3
+	public static String CAP3_TOOL_PATH = "/work/lianglab/bin/CAP3/"; //"/usr/local/bin"; // path for cap3
 	public static Integer PERC_IDENTITY_CAP3 = 90; // overlap percentage identity cutoff
 	public static Integer OVERLAP_CAP3 = 16;
 	
 	// BLASTN
-	public static String BLAST_EXEC_PATH = "/usr/local/ncbi/blast/bin"; // path to blastn executable
+	public static String BLAST_EXEC_PATH = "/work/lianglab/bin/ncbi-blast-2.2.29+/bin"; //"/usr/local/ncbi/blast/bin"; // path to blastn executable
 	public static String CONSENSUS_DB = System.getProperty("user.dir") + "/src/com/yg/input/consensus/" + ME_TYPE + ".fa"; // path and name of blast DB (consensus sequence)
 	public static int LEFTOVER_THRESHOLD = 10; // max leftover bps in contig when aligned to consensus
 	public static int FLANKING_ALIGNMENT_THRESHOLD = 70; //100; // min bps that should be aligned to flanking region in contigs
 	public static int LENGTH_ALIGNED_THRESHOLD = 95; // contig max % of alignment length to insertion
 	
 	// BL2SEQ
-	public static String BL2SEQ_EXEC_PATH = "/usr/local/bin";  // path to bl2seq executable
+	public static String BL2SEQ_EXEC_PATH = "/work/lianglab/bin/blast-2.2.26/bin"; //"/usr/local/bin";  // path to bl2seq executable
 	
 	// THREADS
 	public static int THREADS = 1; // by default
