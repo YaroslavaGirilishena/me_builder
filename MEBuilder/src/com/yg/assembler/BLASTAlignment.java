@@ -132,8 +132,8 @@ public class BLASTAlignment {
 		blastnCommands.add("1e-5"); //1e-10
 		blastnCommands.add("-word_size");
 		blastnCommands.add("7"); //9  
-		blastnCommands.add("-F"); // for not filtering out the low complexity sequence match
-		blastnCommands.add("F");
+		//blastnCommands.add("-F"); // for not filtering out the low complexity sequence match
+		//blastnCommands.add("F");
 		
 		
 		// Run the tool

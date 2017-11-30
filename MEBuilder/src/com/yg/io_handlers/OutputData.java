@@ -89,16 +89,21 @@ public class OutputData {
 				  "|5TR|" + me.getTransduction5().length() + ":" + me.getTransduction5() + // 5' end transduction
 				  "|3TR|" + me.getTransduction3().length() + ":" + me.getTransduction3(); // 3' end transduction
 				
-		
+		/*
 		String preintegrationFile = System.getProperty("user.dir") + "/intermediate_output/ref_flanking/" + IOParameters.ME_TYPE + "/" + me.getChromosome() + "_" + me.getPosition() + ".fa";
 		FastaParser preintegration = new FastaParser(preintegrationFile);
 		FASTASeq preintegrationAllele = preintegration.parse().get(0);
-		
+
 		output += "\n" + preintegrationAllele.getSequence().substring(0, IOParameters.FLANKING_REGION) + // write pre-integration allele
 				  "\n" + me.getTSD() + 
 				  "\n" + preintegrationAllele.getSequence().substring(IOParameters.FLANKING_REGION) +
 				  "\n//\n";	// to separate events
-					
+		*/	
+		// new output format 400 bp of flanking including TSD
+		output += "\n" + me.getFlankingL() + // write pre-integration allele
+				  "\n" + me.getTSD() + 
+				  "\n" + me.getFlankingR() +
+				  "\n//\n";	// to separate events
 							
 		try(FileWriter fw = new FileWriter(outfilename, false);
 		    BufferedWriter bw = new BufferedWriter(fw);
@@ -320,27 +325,17 @@ public class OutputData {
 			tr = flankSeq.substring(IOParameters.FLANKING_REGION); //Integer.parseInt(leftFlankAlignment.get(7)));
 			
 			// poly T/A
-        	matcherA = Pattern.compile("\\A[a]+\\z").matcher(tr);
-        	matcherT = Pattern.compile("\\A[t]+\\z").matcher(tr);
-    
-			me.setFlankingL(flankSeq.substring(0, IOParameters.FLANKING_REGION)); //Integer.parseInt(leftFlankAlignment.get(7))));
-			if (me.getStrand() == '+') {
-				// If the leftover is not a polyT
-				if (!matcherT.find()) {
-					me.setTransduction5(tr);
-				}
-				me.setSequence(tr + me.getSequence());
-				
-				LOGGER.info("5' TR: " + me.getTransduction5() + " " + me.getTransduction5().length() + " bases");
-			} else {
-				// If the leftover is not a polyA
-				if (!matcherA.find()) {
-					me.setTransduction3(tr);
-				}
-				me.setSequence(me.getSequence() + tr);
-				
-				LOGGER.info("3' TR: " + me.getTransduction3() + " " + me.getTransduction3().length() + " bases");
+			matcherT = Pattern.compile("\\A[Tt]+\\z").matcher(tr);
+        	  
+			
+			//me.setFlankingL(flankSeq.substring(0, IOParameters.FLANKING_REGION)); //Integer.parseInt(leftFlankAlignment.get(7))));
+			// If the leftover is not a polyT
+			if (!matcherT.find()) {
+				me.setTransduction5(tr);
 			}
+			me.setSequence(tr + me.getSequence());
+			
+			LOGGER.info("5' TR: " + me.getTransduction5() + " " + me.getTransduction5().length() + " bases");
 		}
 			
 		// right flanking
@@ -352,31 +347,21 @@ public class OutputData {
 			tr = flankSeq.substring(0, flankSeq.length() - lengthOfRefAlignment);
 			
 			// poly T/A
-			matcherA = Pattern.compile("\\A[a]+\\z").matcher(tr);
-        	matcherT = Pattern.compile("\\A[t]+\\z").matcher(tr);
-        	
-        	if (matcherA.find() || matcherT.find()) {
-				return;
-			}
-        	
+			matcherA = Pattern.compile("\\A[Aa]+\\z").matcher(tr);        	
+						
 			if (flankSeq.length() > IOParameters.FLANKING_REGION) {
-				me.setFlankingR(flankSeq.substring(flankSeq.length() - lengthOfRefAlignment));
-				if (me.getStrand() == '-') {
-					if (!matcherT.find()) {
-						me.setTransduction5(tr);
-					}
-					me.setSequence(tr + me.getSequence());
-
-					LOGGER.info("5' TR: " + me.getTransduction5() + " " + me.getTransduction5().length() + " bases");
-				} else {
-					if (!matcherA.find()) {
-						me.setTransduction3(tr);
-					}
-					me.setSequence(me.getSequence() + tr);
-
-					LOGGER.info("3' TR: " + me.getTransduction3() + " " + me.getTransduction3().length() + " bases");
+				//me.setFlankingR(flankSeq.substring(flankSeq.length() - lengthOfRefAlignment));
+				if (!matcherA.find()) {
+					me.setTransduction3(tr);
 				}
+				me.setSequence(me.getSequence() + tr);
+	
+				LOGGER.info("3' TR: " + me.getTransduction3() + " " + me.getTransduction3().length() + " bases");
 			}
 		}
+		
+		// new format 400 bp including TSD
+		me.setFlankingL(flankSeq.substring(Integer.parseInt(leftFlankAlignment.get(7)) - 400, Integer.parseInt(leftFlankAlignment.get(7))));
+		me.setFlankingR(me.getFlankingR().substring(me.getTransduction3().length(), me.getTransduction3().length() + 400));
 	}
 }

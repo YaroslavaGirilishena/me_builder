@@ -613,6 +613,7 @@ public class BridgeAssembly {
 					    		// Get the subject's leftover length
 								bl2seqOut.subjectLeftover = subject.getSequence().length() - bl2seqOut.subjectEnd;
 								bestAlignment = bl2seqOut;
+								break;
 								
 							}
 						} else { // subject '-'
@@ -626,6 +627,7 @@ public class BridgeAssembly {
 					    		// Get the subject's leftover length
 								bl2seqOut.subjectLeftover = bl2seqOut.subjectEnd;
 								bestAlignment = bl2seqOut;
+								break;
 								
 							}
 						}
@@ -645,6 +647,7 @@ public class BridgeAssembly {
 					    		// Get the subject's leftover length
 		    					bl2seqOut.subjectLeftover = bl2seqOut.subjectStart - 1;
 		    					bestAlignment = bl2seqOut;
+		    					break;
 		    					
 							}
 		    			} else { // subject '-'
@@ -658,6 +661,7 @@ public class BridgeAssembly {
 					    		// Get the subject's leftover length
 		    					bl2seqOut.subjectLeftover = subject.getSequence().length() - bl2seqOut.subjectStart;
 		    					bestAlignment = bl2seqOut;
+		    					break;
 		    					
 							}
 		    			}
@@ -677,6 +681,7 @@ public class BridgeAssembly {
 					    		// Get the subject's leftover length
 		    					bl2seqOut.subjectLeftover = bl2seqOut.queryStart - 1;
 		    					bestAlignment = bl2seqOut;
+		    					break;
 		    					
 							}
 		    			} else { // subject '-'
@@ -690,6 +695,7 @@ public class BridgeAssembly {
 					    		// Get the subject's leftover length
 		    					bl2seqOut.subjectLeftover = query.getSequence().length() - bl2seqOut.queryEnd;
 		    					bestAlignment = bl2seqOut;
+		    					break;
 							}
 		    			}
 		    		} else {
@@ -713,6 +719,7 @@ public class BridgeAssembly {
 			    				bl2seqOut.subjectLeftover = subject.getSequence().length() - subjectEnd;
 			    			}
 			    			bestAlignment = bl2seqOut;
+			    			break;
 				    					    		
 						}
 			    		
