@@ -52,7 +52,7 @@ public class UserInputHandler {
 			 
 			try {
 				// Parse config file with parameters
-				clParameters = getConfigParams(args[0]);
+				clParameters = getConfigParams(args[1]);
 				
 				// Parse data and setup global parameters
 				setupGlobalParameters(clParameters);
@@ -82,7 +82,7 @@ public class UserInputHandler {
 				!clParameters.containsKey("-i") ||
 				!clParameters.containsKey("-BAMpath") || !clParameters.containsKey("-SAMTOOLSpath") ||
 				!clParameters.containsKey("-BLASTpath") || !clParameters.containsKey("-BLASTdb") || !clParameters.containsKey("-BL2SEQpath") ||
-				!clParameters.containsKey("-CDHITPath") || !clParameters.containsKey("-CAP3path") ||
+				!clParameters.containsKey("-CDHITpath") || !clParameters.containsKey("-CAP3path") ||
 				!clParameters.containsKey("-ME") || !IOParameters.SUPPORTED_TYPES.contains(clParameters.get("-ME"))) {
 				
 				throw new InputParametersException("PARAMETERS ERROR: Parameters do not meet the requirements");
@@ -167,9 +167,9 @@ public class UserInputHandler {
 				"-BLASTpath: path to blastn executable, required\n" + 
 				"-BLASTdb: path and name of blast DB, required\n" +
 				"-BL2SEQpath: path to bl2seq executable, required\n" + 
-				"-CDHITPath: path to cd-hit executable, required\n" +
+				"-CDHITpath: path to cd-hit executable, required\n" +
 				"-CAP3path: path to cap3 executable, required\n" +
-				"-connfig: path to the configuration faile with all parameters specified there. optional\n" +
+				"-config: path to the configuration faile with all parameters specified there. optional\n" +
 				// genome version
 				// -dev 1 
 				
@@ -189,25 +189,28 @@ public class UserInputHandler {
 		IOParameters.ME_TYPE = clParameters.get("-ME");
 		
 		// Input file with events
-		if (clParameters.containsKey("-i")) {
+		if (clParameters.containsKey("-i") && !clParameters.get("-i").equals("")) {
 			IOParameters.INPUT_FILE_WITH_LOCATIONS = clParameters.get("-i");
 			IOParameters.INPUT_FILE = true;
-		} else {
+		} else if (clParameters.containsKey("-c") && !clParameters.get("-c").equals("") && (clParameters.containsKey("-p") && !clParameters.get("-p").equals(""))) {
 			// Given a single loci
 			IOParameters.DEF_CHROMOSOME = clParameters.get("-c");
 			IOParameters.DEF_POSITION = Integer.parseInt(clParameters.get("-p"));
 			IOParameters.INPUT_FILE = false;
+		} else {
+			throw new InputParametersException("PARAMETERS ERROR: Parameters do not meet the requirements"); 
 		}
 		
 		if (clParameters.containsKey("-startLoci") && clParameters.containsKey("-endLoci")) {
+			IOParameters.SE_SPECIFIED = true;
 			IOParameters.START_LOCI = Integer.parseInt(clParameters.get("-startLoci"));
 			IOParameters.END_LOCI = Integer.parseInt(clParameters.get("-endLoci"));
 		}
 		
 		// Set minimum insertion length
 		if (clParameters.containsKey("-min_ins_length")) {
-			if (Integer.parseInt(clParameters.get("min_ins_length")) >= 50 && Integer.parseInt(clParameters.get("min_ins_length")) <= 200) {
-				IOParameters.MIN_MEI_LENGTH.put(IOParameters.ME_TYPE, Integer.parseInt(clParameters.get("min_ins_length")));
+			if (Integer.parseInt(clParameters.get("-min_ins_length")) >= 50 && Integer.parseInt(clParameters.get("-min_ins_length")) <= 200) {
+				IOParameters.MIN_MEI_LENGTH.put(IOParameters.ME_TYPE, Integer.parseInt(clParameters.get("-min_ins_length")));
 			} else {
 				throw new InputParametersException("PARAMETERS ERROR: Parameters do not meet the requirements");
 			}
@@ -222,14 +225,17 @@ public class UserInputHandler {
 			IOParameters.getListOfBamFiles();
 		}
 		
+		// Refence genome directory
+		IOParameters.REF_SEQ_DIR = clParameters.get("-ref_dir");
+		
 		// Consensus DB path
-		IOParameters.CONSENSUS_DB = clParameters.get("-BLASTdb");
+		//IOParameters.CONSENSUS_DB = clParameters.get("-BLASTdb");
 		
 		// Tools exec paths
 		IOParameters.SAMTOOLS_PATH = clParameters.get("-SAMTOOLSpath");
 		IOParameters.BLAST_EXEC_PATH = clParameters.get("-BLASTpath");
 		IOParameters.BL2SEQ_EXEC_PATH = clParameters.get("-BL2SEQpath");
-		IOParameters.CDHIT_TOOL_PATH = clParameters.get("-CDHITPath");
+		IOParameters.CDHIT_TOOL_PATH = clParameters.get("-CDHITpath");
 		IOParameters.CAP3_TOOL_PATH = clParameters.get("-CAP3path");
 		
 		// Number of threads
@@ -258,7 +264,7 @@ public class UserInputHandler {
 	public static Map<String, String> getConfigParams(String propertiesFile) throws IOException {	
 		InputStream inputStream = null;
 		Map<String, String> parameters = new HashMap<String, String>();
-		
+				
 		try {
 			Properties prop = new Properties();
 			File inputFile = new File(propertiesFile);
@@ -268,20 +274,21 @@ public class UserInputHandler {
 			inputStream = new FileInputStream(inputFile);
 
 			prop.load(inputStream);
-  
+			
 			// -------------------------------
 			// CHECK REQUIRED PARAMETERS
 		    // -------------------------------
 			
 			if (prop.getProperty("-ME") == null || prop.getProperty("-ME").equals("") ||
-			   (prop.getProperty("-BAMpath") == null || prop.getProperty("-BAMpath").equals("") && prop.getProperty("-BAMfile") == null ||  prop.getProperty("-BAMfile").equals("")) ||
+			   prop.getProperty("-BAMpath") == null || prop.getProperty("-BAMpath").equals("") || //&& prop.getProperty("-BAMfile") == null ||  prop.getProperty("-BAMfile").equals("")) ||
 			   prop.getProperty("-SAMTOOLSpath") == null || prop.getProperty("-SAMTOOLSpath").equals("") ||
 			   prop.getProperty("-BLASTpath") == null || prop.getProperty("-BLASTpath").equals("") ||
-			   prop.getProperty("-BLASTdb") == null || prop.getProperty("-BLASTdb").equals("") ||
+			   //prop.getProperty("-BLASTdb") == null || prop.getProperty("-BLASTdb").equals("") ||
 			   prop.getProperty("-BL2SEQpath") == null || prop.getProperty("-BL2SEQpath").equals("") ||
-			   prop.getProperty("-CDHITPath") == null || prop.getProperty("-CDHITPath").equals("") ||
+			   prop.getProperty("-CDHITpath") == null || prop.getProperty("-CDHITpath").equals("") ||
 			   prop.getProperty("-CAP3path") == null || prop.getProperty("-CAP3path").equals("")) {
 				
+				System.out.println("EXCEPTION - Config file: BAD ARGUMENTS"); 
 				throw new InputParametersException("PARAMETERS ERROR: Parameters do not meet the requirements");
 			}
 			
@@ -299,37 +306,59 @@ public class UserInputHandler {
 			if (prop.getProperty("-c") != null && !prop.getProperty("-c").equals("")) {
 				parameters.put("-c", prop.getProperty("-c"));
 			}
+			
 			if (prop.getProperty("-p") != null && !prop.getProperty("-p").equals("")) {
 				parameters.put("-p", prop.getProperty("-p"));
 			}
+			
 			if (prop.getProperty("-min_ins_length") != null && !prop.getProperty("-min_ins_length").equals("")) {
-				parameters.put("-min_ins_length", prop.getProperty("-i"));
+				parameters.put("-min_ins_length", prop.getProperty("-min_ins_length"));
 			}
 			
 			if (prop.getProperty("-BAMpath") != null && !prop.getProperty("-BAMpath").equals("")) {
 				parameters.put("-BAMpath", prop.getProperty("-BAMpath"));
 			}
+			
 			if (prop.getProperty("-BAMfile") != null && !prop.getProperty("-BAMfile").equals("")) {
 				parameters.put("-BAMfile", prop.getProperty("-BAMfile"));
 			}
 			
+			if (prop.getProperty("-ref_dir") != null && !prop.getProperty("-ref_dir").equals("")) {
+				parameters.put("-ref_dir", prop.getProperty("-ref_dir"));
+			}
+			
+			// for dev mode - path is empty
 			if (prop.getProperty("-SAMTOOLSpath") != null && !prop.getProperty("-SAMTOOLSpath").equals("")) {
 				parameters.put("-SAMTOOLSpath", prop.getProperty("-SAMTOOLSpath"));
 			}
+			
 			if (prop.getProperty("-BLASTpath") != null && !prop.getProperty("-BLASTpath").equals("")) {
 				parameters.put("-BLASTpath", prop.getProperty("-BLASTpath"));
 			}
-			if (prop.getProperty("-BLASTdb") != null && !prop.getProperty("-BLASTdb").equals("")) {
-				parameters.put("-BLASTdb", prop.getProperty("-i"));
-			}
+			
+			// added into the project
+//			if (prop.getProperty("-BLASTdb") != null && !prop.getProperty("-BLASTdb").equals("")) {
+//				parameters.put("-BLASTdb", prop.getProperty("-BLASTdb"));
+//			}
+			
 			if (prop.getProperty("-BL2SEQpath") != null && !prop.getProperty("-BL2SEQpath").equals("")) {
 				parameters.put("-BL2SEQpath", prop.getProperty("-BL2SEQpath"));
 			}
-			if (prop.getProperty("-CDHITPath") != null && !prop.getProperty("-CDHITPath").equals("")) {
-				parameters.put("-CDHITPath", prop.getProperty("-CDHITPath"));
+			
+			if (prop.getProperty("-CDHITpath") != null && !prop.getProperty("-CDHITpath").equals("")) {
+				parameters.put("-CDHITpath", prop.getProperty("-CDHITpath"));
 			}
+			
 			if (prop.getProperty("-CAP3path") != null && !prop.getProperty("-CAP3path").equals("")) {
-				parameters.put("-CAP3path", prop.getProperty("-i"));
+				parameters.put("-CAP3path", prop.getProperty("-CAP3path"));
+			}
+			
+			if (prop.getProperty("-startLoci") != null && !prop.getProperty("-startLoci").equals("")) {
+				parameters.put("-startLoci", prop.getProperty("-startLoci"));
+			}
+			
+			if (prop.getProperty("-endLoci") != null && !prop.getProperty("-endLoci").equals("")) {
+				parameters.put("-endLoci", prop.getProperty("-endLoci"));
 			}
 			
 		} catch (Exception e) {

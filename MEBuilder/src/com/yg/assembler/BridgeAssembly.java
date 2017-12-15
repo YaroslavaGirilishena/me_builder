@@ -209,14 +209,14 @@ public class BridgeAssembly {
     			List<File> filesToMerge = new ArrayList<File>();
     			if (leftMergedContigsFile != null) filesToMerge.add(new File(leftMergedContigsFile));
     			if (rightMergedContigsFile != null) filesToMerge.add(new File(rightMergedContigsFile));
-    			
+    			    			
     			finalMergedContigs = System.getProperty("user.dir")  + alignmentOutDir + "/" + "left_right.fa";
     			IOGeneralHelper.mergeFiles(filesToMerge, finalMergedContigs);
     			
     			// Align paths to the consensus
     			alignInsertionToConsensus(finalMergedContigs, false);
     			
-    			if (me.isFull()) {
+    			if (me.isFull() || me.isPartialChar()) {
     				String seq = me.getFlankingL() + me.getSequence() + me.getFlankingR();
     				String desc = "left_right";
     				FASTASeq mergedSequence = new FASTASeq(desc, seq);
@@ -439,13 +439,31 @@ public class BridgeAssembly {
 			}
 		} else {
 			// Both left and right flanking included
-			fullSeq = query.getSequence().substring(0, bl2seqRes.queryEnd) // merged left path
-					+ subject.getSequence().substring(bl2seqRes.subjectEnd); // right flanking
+			boolean successful = false;
+			
+			if (bl2seqRes.subjectStrand == '+') { // subject '+'
+				if (bl2seqRes.subjectStart < 25 && Math.abs(bl2seqRes.queryEnd - query.getSequence().length()) < 50) {
+					
+					fullSeq = query.getSequence().substring(0, bl2seqRes.queryEnd) // merged left path
+							+ subject.getSequence().substring(bl2seqRes.subjectEnd); // right flanking
+					
+					successful = true;
+				}
+			} 
+			
+			if (!successful) {
+				if (query.getSequence().length() > IOParameters.AVG_INS_LENGTH.get(IOParameters.ME_TYPE) + IOParameters.FLANKING_REGION) {
+					fullSeq = query.getSequence()	 // merged left path
+							+ subject.getSequence(); // right flanking
+				}
+			}
 		}
-		
+				
 		// If merged contig is too short 
-		if (fullSeq.length() < 900 && contig1File.contains(IOParameters.LEFT_FLANK_TAG) && contig1File.contains(IOParameters.RIGHT_FLANK_TAG)) {
-			return null;
+		if (contig1File.contains(IOParameters.LEFT_FLANK_TAG) && contig1File.contains(IOParameters.RIGHT_FLANK_TAG)) {
+			if (fullSeq.length() < IOParameters.AVG_INS_LENGTH.get(IOParameters.ME_TYPE) + 2*IOParameters.FLANKING_REGION) {
+				return null;
+			}
 		} else if (fullSeq.length() < 200) {
 			return null;
 		}

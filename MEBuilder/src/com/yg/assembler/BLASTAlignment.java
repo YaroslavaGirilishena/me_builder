@@ -327,32 +327,45 @@ public class BLASTAlignment {
 		// Only one contig is aligned
 		if (contig2 == null || alignments.size() < 2) {
 			
-			if (alignments.get(0).getLength() > IOParameters.AVG_INS_LENGTH.get(IOParameters.ME_TYPE)) {
-				LOGGER.info("FULL insertion found\n");
+			if (contig1.getLength() > IOParameters.AVG_INS_LENGTH.get(IOParameters.ME_TYPE)) {
+				LOGGER.info("ONE alignment insertion found. Contains FULL insertion\n");
 				me.setFull(true);
-				me.setSequence(contigs.get(alignments.get(0).getQseqid()).getSequence().substring((int)alignments.get(0).getQstart()-1, (int)alignments.get(0).getQend())); //, (int)alignments.get(0).getQend()));
+				me.setSequence(contigs.get(contig1.getQseqid()).getSequence().substring((int)contig1.getQstart()-1, (int)contig1.getQend()));
 
 				// Get flanking regions
-				if (alignments.get(0).getQseqid().contains("left")) {
+				if (contig1.getQseqid().contains("left")) {
 
 					String rightFlankFile = System.getProperty("user.dir") + "/intermediate_output/contigs_for_merging/" + IOParameters.ME_TYPE + "/" + IOParameters.ME_TYPE + "." + me.getChromosome() + "_" + me.getPosition() + "/contigs/right_flank.fa";
 					// Get right flanking
 					FastaParser parseFlank = new FastaParser(rightFlankFile);
 					FASTASeq rightFlank = parseFlank.parse().get(0);
 					
-					me.setFlankingL(contigs.get(alignments.get(0).getQseqid()).getSequence().substring(0, (int)alignments.get(0).getQstart()-1)); // left
-					me.setFlankingR(rightFlank.getSequence());
+					me.setFlankingL(contigs.get(contig1.getQseqid()).getSequence().substring(0, (int)contig1.getQstart()-1)); // left
+					
+					// Get extra bases in front of the insertion
+					if (contigs.get(contig1.getQseqid()).getSequence().length() - (int)contig1.getQend() > 0) {
+						// attach extra bases to the left flanking
+						me.setFlankingR(contigs.get(contig1.getQseqid()).getSequence().substring((int)contig1.getQend()) + rightFlank.getSequence());
+					} else {
+						me.setFlankingR(rightFlank.getSequence());
+					}
 					
 				} else {
 
 					String leftFlankFile = System.getProperty("user.dir") + "/intermediate_output/contigs_for_merging/" + IOParameters.ME_TYPE + "/" + IOParameters.ME_TYPE + "." + me.getChromosome() + "_" + me.getPosition() + "/contigs/left_flank.fa";
-
 					// Get left flanking
 					FastaParser parseFlank = new FastaParser(leftFlankFile);
 					FASTASeq leftFlank = parseFlank.parse().get(0);
 					
-					me.setFlankingR(contigs.get(alignments.get(0).getQseqid()).getSequence().substring((int)alignments.get(0).getQend())); // right
-					me.setFlankingL(leftFlank.getSequence());
+					me.setFlankingR(contigs.get(contig1.getQseqid()).getSequence().substring((int)contig1.getQend())); // right
+					
+					// Get extra bases in front of the insertion
+					if ((int)contig1.getQstart() > 1) {
+						// attach extra bases to the left flanking
+						me.setFlankingL(leftFlank.getSequence() + contigs.get(contig1.getQseqid()).getSequence().substring(0, (int)contig1.getQstart()));
+					} else {
+						me.setFlankingL(leftFlank.getSequence());
+					}
 					
 				}
 				
@@ -360,13 +373,15 @@ public class BLASTAlignment {
 				me.setFull(false); // set found full sequence to false
 			}
 			
-			me.setLength(alignments.get(0).getLength()); // set length
-			me.setTypeOfMEI(alignments.get(0).getSseqid()); //set type
-			me.getConsensusAlignments().add(new ConsensusLocation(alignments.get(0).getQseqid(), alignments.get(0).getSseqid(), alignments.get(0).getSstart(), alignments.get(0).getSend())); // add consensus alignment
+			me.setLength(contig1.getLength()); // set length
+			me.setTypeOfMEI(contig1.getSseqid()); //set type
+			me.getConsensusAlignments().add(new ConsensusLocation(contig1.getQseqid(), contig1.getSseqid(), contig1.getSstart(), contig1.getSend())); // add consensus alignment
 			me.setStrand(me.getConsensusAlignments().get(0).getStrand()); // set strand
 			
 			return;
 		}
+		
+		// Two contigs are aligned
 		
 		// Contig1 stores the left flanking, contig2 stores the right flanking
 		if (!contig1.getQseqid().contains("left") && contig1.getQseqid().contains("right")) {
@@ -374,7 +389,7 @@ public class BLASTAlignment {
 			contig1 = contig2;
 			contig2 = tempContig;
 		}
-			
+					
 		// Start and end positions in the consensus
 		long contig1Sstart = contig1.getSstart() < contig1.getSend() ? contig1.getSstart() : contig1.getSend();
 		long contig1Send = contig1.getSstart() < contig1.getSend() ? contig1.getSend() : contig1.getSstart();
@@ -495,7 +510,7 @@ public class BLASTAlignment {
 		
 		// Get gap length
 		long leftBound, rightBound;
-
+		
 		if (contig1Sstart < contig2Sstart) {
 			// contig1
 			leftBound = contig1Send;
@@ -514,6 +529,7 @@ public class BLASTAlignment {
 		// Calculate the insertion length
 		int melength = (int) (contig1.getLength() + contig2.getLength() + gapLength);
 		me.setLength(melength);
+		
 		
 		// -----------------------
  		// SEQUENCE
@@ -564,7 +580,7 @@ public class BLASTAlignment {
 			
 			// Set sequence and flanking regions
 			me.setSequence(sequence);
-			me.setFlankingL(contigs.get(contig1.getQseqid()).getSequence().substring(0, (int)contig1.getQstart()-1)); // left
+			me.setFlankingL(contigs.get(contig1.getQseqid()).getSequence().substring(0, (int)contig1.getQstart())); // left
 			me.setFlankingR(contigs.get(contig2.getQseqid()).getSequence().substring((int)contig2.getQend())); // right
 		
 		} else {

@@ -139,7 +139,7 @@ public class Main {
 			
 			LOGGER.info("\n---------------------------------------------------------------------------------------------------------------------------------\n" +
 					"---------------------------------------------------------------------------------------------------------------------------------\n");
-			LOGGER.info("Process STARTED for: " + IOParameters.ME_TYPE + "." + me.getChromosome() + '_' + me.getPosition() + "\t#" + i + " in a list\n");
+			LOGGER.info("Process STARTED for: " + IOParameters.ME_TYPE + "." + me.getChromosome() + '_' + me.getPosition() + "\t#" + (i+1) + " in a list\n");
 			i++;
 			
 			// Collect discordant reads and split-reads by running SAMtools on the collection of .bam files

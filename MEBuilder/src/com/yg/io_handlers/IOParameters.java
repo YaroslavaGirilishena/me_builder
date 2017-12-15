@@ -92,8 +92,8 @@ public class IOParameters {
 	public static String REFERENCE_SEQ_BED = System.getProperty("user.dir") + "/src/com/yg/input/ref/hg19_";
 	public static String REFERENCE_END = ".BED";
 	
-	public static final String REF_SEQ_DIR = "/work/lianglab/DB/genomeSeq/hg19/"; //System.getProperty("user.dir") + "/src/com/yg/input/ref/";
-	public static String REFERENCE_SEQ_FA =  System.getProperty("user.dir") + "/src/com/yg/input/ref/hg19.fa";
+	public static String REF_SEQ_DIR = "/work/lianglab/DB/genomeSeq/hg19/"; //"./input_ref/"; // chromosome sequences
+	public static String REFERENCE_SEQ_FA =  System.getProperty("user.dir") + "/src/com/yg/input/ref/hg19.fa"; // all chromosomes in one file (removed for now)
 	
 	// Non-referenced MEIs
 	public static String NON_REF_MEIS = System.getProperty("user.dir") + "/src/com/yg/input/non_reference/dbRIP_nonRef.Alu.bed";
