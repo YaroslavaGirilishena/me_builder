@@ -69,21 +69,15 @@ public class OutputData {
 		String output = ">1KP" + "|ID|ME|SINE:" + IOParameters.ME_TYPE + ":" +  me.getConsensusAlignments().get(0).getConsensus() + // ME type
 				  "|Strand|" + me.getStrand() + // strand  
 				  "|Genome|hg19|Pos|" + me.getChromosome() + ":" + me.getStartPos() + "-" + me.getEndPos() + // location
-				  "|Allele|pre|Insertion|non-ref|TSD|" + me.getTSD().length() + ":" + me.getTSD() + //TSD
-				  "|IMD|" + me.getIMD().length() + ":" + me.getIMD() + // IMD 
-				  "|5TR|" + me.getTransduction5().length() + ":" + me.getTransduction5() + // 5' end transduction
-				  "|3TR|" + me.getTransduction3().length() + ":" + me.getTransduction3(); // 3' end transduction
+				  "|Allele|pre|Insertion|non-ref|TSD|" + me.getTSD().length();
+		if (me.getTSD().length() > 0) output += ":" + me.getTSD(); //TSD
+		output += "|IMD|" + me.getIMD().length();
+		if (me.getIMD().length() > 0) output += ":" + me.getIMD(); // IMD 
+		output += "|5TR|" + me.getTransduction5().length();
+		if (me.getTransduction5().length() > 0) output += ":" + me.getTransduction5(); // 5' end transduction
+		output += "|3TR|" + me.getTransduction3().length();
+		if (me.getTransduction3().length() > 0) output += ":" + me.getTransduction3(); // 3' end transduction
 				
-		/*
-		String preintegrationFile = System.getProperty("user.dir") + "/intermediate_output/ref_flanking/" + IOParameters.ME_TYPE + "/" + me.getChromosome() + "_" + me.getPosition() + ".fa";
-		FastaParser preintegration = new FastaParser(preintegrationFile);
-		FASTASeq preintegrationAllele = preintegration.parse().get(0);
-
-		output += "\n" + preintegrationAllele.getSequence().substring(0, IOParameters.FLANKING_REGION) + // write pre-integration allele
-				  "\n" + me.getTSD() + 
-				  "\n" + preintegrationAllele.getSequence().substring(IOParameters.FLANKING_REGION) +
-				  "\n//\n";	// to separate events
-		*/	
 		// new output format 400 bp of flanking including TSD
 		output += "\n" + me.getFlankingL() + // write pre-integration allele
 				  "\n" + me.getTSD() + 
@@ -94,10 +88,14 @@ public class OutputData {
 		output += ">1KP" + "|ID|ME|SINE:" + IOParameters.ME_TYPE + ":" +  me.getConsensusAlignments().get(0).getConsensus() + // ME type
 						"|Strand|" + me.getStrand() + // strand
 						"|Genome|hg19|Pos|" + me.getChromosome() + ":" + me.getStartPos() + "-" + me.getEndPos() + // location
-						"|Allele|ins|Insertion|non-ref|TSD|" + me.getTSD().length() + ":" + me.getTSD() + //TSD
-						"|IMD|" + me.getIMD().length() + ":" + me.getIMD() + // IMD 
-						"|5TR|" + me.getTransduction5().length() + ":" + me.getTransduction5() + // 5' end transduction
-						"|3TR|" + me.getTransduction3().length() + ":" + me.getTransduction3(); // 3' end transduction
+						"|Allele|ins|Insertion|non-ref|TSD|" + me.getTSD().length();
+		if (me.getTSD().length() > 0) output += ":" + me.getTSD(); //TSD
+		output += "|IMD|" + me.getIMD().length();
+		if (me.getIMD().length() > 0) output += ":" + me.getIMD(); // IMD 
+		output += "|5TR|" + me.getTransduction5().length();
+		if (me.getTransduction5().length() > 0) output += ":" + me.getTransduction5(); // 5' end transduction
+		output += "|3TR|" + me.getTransduction3().length();
+		if (me.getTransduction3().length() > 0) output += ":" + me.getTransduction3(); // 3' end transduction
 		
 		output += 	"\n" + me.getFlankingL() + // left flanking
 					"\n" + me.getTSD() + // TSD
@@ -409,42 +407,6 @@ public class OutputData {
 				System.out.println("\nINSERTION IS NEXT TO RIGHT FLANK, NO polyA");
 			}
 		}
-		
-		
-		// Right flanking
-//		int lengthOfRefAlignment = Integer.parseInt(rightFlankAlignment.get(3)); // length of alignment to the reference
-//		if (lengthOfRefAlignment >= IOParameters.FLANKING_REGION &&
-//				me.getFlankingR().length() > IOParameters.FLANKING_REGION &&
-//				me.getFlankingR().length() > lengthOfRefAlignment) { // if there is an extra sequence
-//			
-//			flankSeq = me.getFlankingR(); // at this point flanking sequence will have extra bases (if there are ones) that are not part of consensus MEI
-//			tr = flankSeq.substring(0, flankSeq.length() - lengthOfRefAlignment);
-//			
-//			// polyA
-//			matcherA = Pattern.compile("\\A[Aa]+\\z").matcher(tr);        	
-//						
-//			if (!matcherA.find()) {
-//				me.setTransduction3(tr);
-//			}
-//			me.setSequence(me.getSequence() + tr);
-//			
-//			me.setFlankingR(me.getFlankingR().substring(tr.length())); // remove polyA or TR from the beginning of the flanking
-//
-//			LOGGER.info("3' TR: " + me.getTransduction3() + " " + me.getTransduction3().length() + " bases");
-//			
-//		} else if (lengthOfRefAlignment > me.getFlankingR().length()) {
-//			System.out.println("\n Searching for polyA");
-//			// polyA
-//			matcherA = Pattern.compile("\\A[Aa]+").matcher(me.getFlankingR());
-//			
-//			if (matcherA.find()) {
-//		    	me.setSequence(me.getSequence() + me.getFlankingR().substring(matcherA.start(), matcherA.end())); // attach polyA to the insertion sequence
-//		    	me.setFlankingR(me.getFlankingR().substring(matcherA.end())); // remove polyA from the flanking sequence
-//		    }
-//			
-//		} else {
-//			System.out.println("\nINSERTION IS NEXT TO RIGHT FLANK, NO polyA");
-//		}
 		
 		// Setup left flanking
 		// new format 400 bp including TSD
