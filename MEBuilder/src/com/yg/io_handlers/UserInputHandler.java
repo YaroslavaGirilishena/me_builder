@@ -229,10 +229,12 @@ public class UserInputHandler {
 		IOParameters.REF_SEQ_DIR = clParameters.get("-ref_dir");
 		
 		// Consensus DB path
-		//IOParameters.CONSENSUS_DB = clParameters.get("-BLASTdb");
+		IOParameters.CONSENSUS_DB = System.getProperty("user.dir") + "/src/com/yg/input/consensus/" + IOParameters.ME_TYPE + ".fa"; ;
 		
 		// Tools exec paths
-		IOParameters.SAMTOOLS_PATH = clParameters.get("-SAMTOOLSpath");
+		if (clParameters.containsKey("-SAMTOOLSpath")) {
+			IOParameters.SAMTOOLS_PATH = clParameters.get("-SAMTOOLSpath");
+		}
 		IOParameters.BLAST_EXEC_PATH = clParameters.get("-BLASTpath");
 		IOParameters.BL2SEQ_EXEC_PATH = clParameters.get("-BL2SEQpath");
 		IOParameters.CDHIT_TOOL_PATH = clParameters.get("-CDHITpath");
@@ -281,7 +283,7 @@ public class UserInputHandler {
 			
 			if (prop.getProperty("-ME") == null || prop.getProperty("-ME").equals("") ||
 			   prop.getProperty("-BAMpath") == null || prop.getProperty("-BAMpath").equals("") || //&& prop.getProperty("-BAMfile") == null ||  prop.getProperty("-BAMfile").equals("")) ||
-			   prop.getProperty("-SAMTOOLSpath") == null || prop.getProperty("-SAMTOOLSpath").equals("") ||
+			   //prop.getProperty("-SAMTOOLSpath") == null || prop.getProperty("-SAMTOOLSpath").equals("") ||
 			   prop.getProperty("-BLASTpath") == null || prop.getProperty("-BLASTpath").equals("") ||
 			   //prop.getProperty("-BLASTdb") == null || prop.getProperty("-BLASTdb").equals("") ||
 			   prop.getProperty("-BL2SEQpath") == null || prop.getProperty("-BL2SEQpath").equals("") ||

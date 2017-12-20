@@ -151,7 +151,7 @@ public class IOParameters {
 	
 	// BLASTN
 	public static String BLAST_EXEC_PATH = "/work/lianglab/bin/ncbi-blast-2.2.29+/bin"; //"/usr/local/ncbi/blast/bin"; // path to blastn executable
-	public static String CONSENSUS_DB = System.getProperty("user.dir") + "/src/com/yg/input/consensus/" + ME_TYPE + ".fa"; // path and name of blast DB (consensus sequence)
+	public static String CONSENSUS_DB = System.getProperty("user.dir") + "/src/com/yg/input/consensus/Alu_L1_SVA_HERVK.fa"; // path and name of blast DB (consensus sequence)
 	public static int LEFTOVER_THRESHOLD = 10; // max leftover bps in contig when aligned to consensus
 	public static int FLANKING_ALIGNMENT_THRESHOLD = 70; //100; // min bps that should be aligned to flanking region in contigs
 	public static int LENGTH_ALIGNED_THRESHOLD = 95; // contig max % of alignment length to insertion
